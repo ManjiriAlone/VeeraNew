@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classroom Temperature Monitoring System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(135deg, #003399, #007bff);
+      overflow-x: hidden;
+      text-align: center;
+      color: #fff;
+      position: relative;
+    }
+
+    /* Decorative Clips */
+    .clip-top, .clip-bottom {
+      position: absolute;
+      opacity: 0.75;
+      pointer-events: none;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+    }
+    .clip-top { top: 20px; left: 25px; width: 130px; }
+    .clip-bottom { bottom: 20px; right: 25px; width: 150px; }
+
+    /* Top Icons */
+    .top-icons {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+
+    .top-icons button {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .top-icons button:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    }
+
+    /* Heading */
+    h1 {
+      margin-top: 90px;
+      font-size: 2.2rem;
+      background: rgba(0, 0, 60, 0.5);
+      padding: 15px 35px;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      animation: fadeInDown 1s ease both;
+    }
+
+    /* Experiment Board */
+    .board {
+      margin-top: 40px;
+      width: 90%;
+      max-width: 700px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(15px);
+      animation: fadeInUp 1.2s ease both;
+    }
+
+    .board img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .board-placeholder {
+      width: 100%;
+      height: 350px;
+      border: 2px dashed rgba(255,255,255,0.4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    /* Circles + Glow */
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 3px dashed rgba(255,255,255,0.8);
+      animation: pulse 2s infinite ease-in-out;
+      pointer-events: none;
+    }
+
+    .circle-led {
+      top: 10%;
+      left: 10%;
+      width: 120px;
+      height: 60px;
+      border-color: #00ff66;
+      box-shadow: 0 0 12px #00ff66;
+    }
+
+    .circle-pic {
+      bottom: 20%;
+      right: 15%;
+      width: 140px;
+      height: 70px;
+      border-color: #ffff33;
+      box-shadow: 0 0 12px #ffff33;
+    }
+
+    /* Labels */
+    .arrow {
+      position: absolute;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 12px;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 1rem;
+      text-shadow: 1px 1px 3px #000;
+      font-weight: bold;
+    }
+    .arrow-led { top: -45px; left: 45%; transform: translateX(-50%); }
+    .arrow-pic { bottom: -45px; right: 10%; }
+
+    /* Speech Bubble */
+    .speech {
+      margin-top: 35px;
+      background: rgba(255,255,255,0.9);
+      color: #000;
+      padding: 20px 28px;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      max-width: 550px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.6;
+      text-align: left;
+      position: relative;
+      animation: fadeIn 1.3s ease both;
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 20px solid rgba(255,255,255,0.9);
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+    }
+
+    /* Lion Animation */
+    .lion {
+      position: absolute;
+      bottom: 20px;
+      left: 25px;
+      width: 220px;
+      animation: float 3.5s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    /* Continue Button */
+    .continue-btn {
+      margin-top: 40px;
+      padding: 15px 35px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      color: #0066ff;
+      background: #fff;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeInUp 1.5s ease both;
+    }
+
+    .continue-btn:hover {
+      transform: scale(1.07);
+      background: #e6f0ff;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 { font-size: 1.6rem; padding: 12px 25px; }
+      .speech { font-size: 0.95rem; padding: 15px 22px; }
+      .lion { width: 160px; bottom: 10px; }
+      .continue-btn { font-size: 1rem; padding: 12px 28px; }
+    }
+
+    @media (max-width: 480px) {
+      .top-icons button { width: 40px; height: 40px; font-size: 1.1rem; }
+      h1 { font-size: 1.3rem; padding: 10px 18px; margin-top: 70px; }
+      .speech { font-size: 0.85rem; }
+      .lion { width: 130px; }
+      .continue-btn { font-size: 0.9rem; padding: 10px 25px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Clip Arts -->
+  <img src="../../assets/images/clip-top.png" alt="Top Clip" class="clip-top">
+  <img src="../../assets/images/clip-bottom.png" alt="Bottom Clip" class="clip-bottom">
+
+  <!-- Top Buttons -->
+  <div class="top-icons">
+    <button onclick="goHome()" title="Home">🏠</button>
+    <button onclick="goAchievements()" title="Achievements">🏆</button>
+    <button onclick="goBack()" title="Back">⬅️</button>
+  </div>
+
+  <h1>Classroom Temperature<br>Monitoring System</h1>
+
+  <div class="board">
+    <img src="../../assets/images/board.png" alt="Experiment Board" onerror="this.style.display='none'">
+    <div class="board-placeholder" id="boardPlaceholder">📊 Experiment Board</div>
+
+    <div class="circle circle-led"><div class="arrow arrow-led">LED</div></div>
+    <div class="circle circle-pic"></div>
+    <div class="arrow arrow-pic">PIC</div>
+  </div>
+
+  <div class="speech">
+    Look! This is PIC. Little <b>NAME</b> — he’s a tiny sleepy brain.<br>
+    This is Lumi, a dancing light. PIC whispers “Wake up!”<br>
+    Lumi says: <b>“ON!”</b> (Light ON! Big eyes!)
+  </div>
+
+  <button class="continue-btn" onclick="continuePage()">CONTINUE ➜</button>
+
+  <img src="../../assets/images/lion.png" alt="Lion" class="lion" id="lion">
+
+  <audio id="voice" preload="auto">
+    <source src="../../assets/voice/VOICE OVER PAGE 16.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+    const boardImg = document.querySelector(".board img");
+    const placeholder = document.getElementById("boardPlaceholder");
+
+    boardImg.addEventListener("load", () => placeholder.style.display = "none");
+    boardImg.addEventListener("error", () => { boardImg.style.display = "none"; placeholder.style.display = "flex"; });
+
+    // Audio handling
+    function playAudio() {
+      audio.play().then(() => lion.src = "../../assets/images/lion.gif");
+    }
+    window.addEventListener("load", playAudio);
+    audio.addEventListener("ended", () => lion.src = "../../assets/images/lion.png");
+
+    function goHome(){ window.location.href = "../welcome.html"; }
+    function goAchievements(){ window.location.href = "../page4.html"; }
+    function goBack(){ window.history.back(); }
+    function continuePage(){ window.location.href = "C5E6P1.html"; }
+
+    // Serial communication
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.serialAPI?.send) window.serialAPI.send("SET_EXPERIMENT_6");
+      if (window.serialAPI?.onData) {
+        window.serialAPI.onData(data => {
+          if (data.type === "navigate" && data.target) window.location.href = data.target;
+        });
+      }
+    });
+  </script>
+  <script src="../serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

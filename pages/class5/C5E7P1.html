@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water Level Alerting</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, #2b0df1, #ffffff);
+      position: relative;
+      overflow-x: hidden;
+      text-align: center;
+    }
+
+    /* ---- Header ---- */
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 25px;
+      background: rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    .nav-icons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .nav-icons img {
+      width: 40px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 5px;
+    }
+
+    .nav-icons img:hover {
+      transform: scale(1.1);
+    }
+
+    /* ---- Clip Art ---- */
+    .clip-top {
+      position: absolute;
+      top: 90px;
+      left: 15px;
+      width: 100px;
+      opacity: 0.9;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      width: 130px;
+      opacity: 0.9;
+    }
+
+    /* ---- Heading ---- */
+    .heading {
+      margin-top: 110px;
+      font-size: 2rem;
+      font-weight: bold;
+      padding: 10px 25px;
+      background: #2a047b;
+      color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    /* ---- Main Content ---- */
+    .content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 50px;
+      margin-top: 50px;
+      padding: 0 20px;
+    }
+
+    .board {
+      width: 300px;
+      max-width: 90%;
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .item img {
+      width: 160px;
+      max-width: 80%;
+      height: auto;
+    }
+
+    .item p {
+      font-weight: bold;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-on,
+    .btn-off {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-on:hover,
+    .btn-off:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-on {
+      background: #43c743;
+    }
+    .btn-off {
+      background: #e63939;
+    }
+
+    /* ---- Speech bubble ---- */
+    .speech {
+      background: #00cfff;
+      color: #000;
+      padding: 15px 20px;
+      border-radius: 15px;
+      font-size: 1.1rem;
+      max-width: 350px;
+      min-height: 70px;
+      text-align: left;
+      font-weight: bold;
+      margin-top: 15px;
+      position: relative;
+      white-space: pre-wrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      left: 30px;
+      border-width: 15px 15px 0;
+      border-style: solid;
+      border-color: #00cfff transparent transparent transparent;
+    }
+
+    /* ---- Lion ---- */
+    .lion {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+    }
+
+    /* ---- Next Experiment ---- */
+    .next-btn {
+      margin-top: 40px;
+      padding: 15px 35px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      background: #b2b0b0;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.2s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    .next-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .heading {
+        font-size: 1.5rem;
+      }
+
+      .content {
+        gap: 30px;
+      }
+
+      .lion {
+        width: 150px;
+        height: 150px;
+      }
+
+      .speech {
+        font-size: 1rem;
+        max-width: 280px;
+      }
+
+      header {
+        flex-direction: row;
+        padding: 10px 15px;
+      }
+
+      .nav-icons img {
+        width: 35px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .heading {
+        font-size: 1.3rem;
+        padding: 8px 15px;
+      }
+
+      .speech {
+        font-size: 0.9rem;
+        max-width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header with icons -->
+  <header>
+    <div class="logo">🌊 Smart Water Alert</div>
+    <div class="nav-icons">
+      <img src="../../assets/icons/home.png" alt="Home" onclick="goHome()" />
+      <img src="../../assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()" />
+      <img src="../../assets/icons/logout.png" alt="Back" onclick="goBack()" />
+    </div>
+  </header>
+
+  <!-- Clip Arts -->
+  <img src="../../assets/images/clip-top.png" class="clip-top" alt="Top Clip">
+  <img src="../../assets/images/clip-bottom.png" class="clip-bottom" alt="Bottom Clip">
+
+  <!-- Heading -->
+  <div class="heading">WATER LEVEL ALERTING</div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <img src="../../assets/images/plant.png" alt="Board" class="board" />
+
+    <div class="item">
+      <img src="../../assets/images/moisture.png" alt="Soil Moisture Sensor" />
+      <p>Soil Moisture Sensor</p>
+      <div class="buttons">
+        <button class="btn-on">ON</button>
+        <button class="btn-off">OFF</button>
+      </div>
+    </div>
+
+    <div class="item">
+      <img src="../../assets/images/buzzer.png" alt="Buzzer" style="width: 100px;" />
+      <p>Buzzer</p>
+    </div>
+
+    <div class="item">
+      <div class="speech" id="speech"></div>
+      <img src="../../assets/images/lion.png" alt="Lion Mascot" class="lion" id="lion" />
+    </div>
+  </div>
+
+  <!-- Next Experiment -->
+  <button class="next-btn" onclick="goNext()">NEXT EXPERIMENT 🦁</button>
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../../assets/voice/VOICE OVER PAGE 19.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+    const speech = document.getElementById("speech");
+
+    const speechText =
+      "💧 This soil moisture sensor checks if the soil is dry.\nIf water is low, the buzzer alerts us immediately! 🚨";
+
+    // Typewriter effect
+    function typeText(text, element, speed = 45) {
+      element.textContent = "";
+      let i = 0;
+      function typing() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        }
+      }
+      typing();
+    }
+
+    // Autoplay audio & start GIF + typing
+    audio.play().then(() => {
+      lion.src = "../../assets/images/lion.gif";
+      typeText(speechText, speech);
+    }).catch(() => {
+      document.body.addEventListener(
+        "click",
+        () => {
+          audio.play();
+          lion.src = "../../assets/images/lion.gif";
+          typeText(speechText, speech);
+        },
+        { once: true }
+      );
+    });
+
+    // Reset lion to PNG after audio ends
+    audio.addEventListener("ended", () => {
+      lion.src = "../../assets/images/lion.png";
+    });
+
+    // Navigation
+    function goNext() {
+      window.location.href = "../page4.html";
+    }
+    function goHome() {
+      window.location.href = "../welcome.html";
+    }
+    function goAchievements() {
+      window.location.href = "../page4.html";
+    }
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+
+  <script src="../serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Detection working</title>
+    <style>
+        .visual-demo-text {
+            text-align: center;
+            color: #667eea;
+            font-size: 18px;
+            margin-top: 25px;
+            font-weight: 600;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .how-it-works h2 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid #667eea;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+        }
+
+        .step-card:hover::before {
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            animation: spin 20s linear infinite;
+        }
+
+        .step-card:hover .step-number {
+            animation: spinFast 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spinFast {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .step-card h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-card p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Fun Facts */
+        .fun-facts {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .fun-facts h2 {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 35px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .fact-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .fact-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .fact-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .fact-card p {
+            font-size: 16px;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+
+        .nav-buttons {
+    display: flex;
+    justify-content: space-between; /* back left, next right */
+    width: 200px; /* adjust as needed */
+    margin: 20px 0;
+}
+
+.back-btn, .next-btn {
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.back-btn:hover, .next-btn:hover {
+    background-color: #45a049;
+}
+
+
+
+.control-panel {
+    background: #f0f4ff;
+    border-radius: 20px;
+    padding: 30px 25px;
+    margin: 30px 0;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    animation: fadeInUp 0.8s ease 0.5s both;
+}
+
+.control-panel h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.control-inputs {
+    margin-bottom: 20px;
+}
+
+.control-inputs label {
+    font-size: 16px;
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+.control-inputs input {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 150px;
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.set-btn, .reset-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.set-btn {
+    background: #667eea;
+}
+
+.set-btn:hover {
+    background: #5a6ddb;
+}
+
+.reset-btn {
+    background: #e74c3c;
+}
+
+.reset-btn:hover {
+    background: #c0392b;
+}
+
+#current-threshold {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+    </style>
+</head>
+
+<body>
+    <div class="how-it-works">
+        <h2>🤔 How Does It Work?</h2>
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>📡 Sensor Sends Signal</h3>
+                <p>The IR sensor sends out invisible infrared light waves, just like a flashlight beam you can't see!
+                </p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>🔄 Signal Bounces Back</h3>
+                <p>When the light hits an object, it bounces back to the sensor like an echo bouncing off a mountain!
+                </p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>⏱️ Calculate Distance</h3>
+                <p>The sensor measures how long it took for the signal to return and calculates how far away the object
+                    is.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3>📊 Display Result</h3>
+                <p>The board shows you where the object is on the radar screen with a glowing green dot!</p>
+            </div>
+        </div>
+    </div>
+        <div class="control-panel">
+    <h2>⚙️ Control Panel</h2>
+    <div class="control-inputs">
+        <label for="threshold">Set Threshold:</label>
+        <input type="number" id="threshold" placeholder="Enter value" />
+    </div>
+    <div class="control-buttons">
+        <button class="set-btn" onclick="setThreshold()">Set Threshold</button>
+        <button class="reset-btn" onclick="resetThreshold()">Reset Threshold</button>
+    </div>
+    <p id="current-threshold">Current Threshold: Not Set</p>
+</div>
+    <div class="fun-facts">
+        <h2>🌟 Amazing Fun Facts!</h2>
+        <div class="facts-grid">
+            <div class="fact-card">
+                <h3>🦇 Like Bats!</h3>
+                <p>Bats use sound waves (echolocation) to find insects in complete darkness. Our sensor works the same
+                    way but uses invisible light!</p>
+            </div>
+            <div class="fact-card">
+                <h3>🚗 Self-Driving Cars</h3>
+                <p>Modern cars use similar sensors to detect other vehicles and avoid crashes while driving
+                    automatically!</p>
+            </div>
+            <div class="fact-card">
+                <h3>🤖 Robot Helpers</h3>
+                <p>Robot vacuum cleaners use IR sensors to avoid bumping into furniture and falling down stairs!</p>
+            </div>
+            <div class="fact-card">
+                <h3>⚡ Super Fast!</h3>
+                <p>Infrared signals travel at the speed of light - 300,000 kilometers per second. That's fast enough to
+                    go around Earth 7.5 times in one second!</p>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="back-btn" onclick="goBack()">⬅ Back</button>
+            <button class="next-btn" onclick="goNextExp()">Next ➡</button>
+        </div>
+
+
+
+    </div>
+
+</body>
+<script>
+function goBack() {
+    window.history.back();
+}
+
+function goNextExp() {
+    // Replace with actual URL or function to go to the next experiment
+    window.location.href = "class6E2.html";
+}
+
+let thresholdValue = null;
+
+function setThreshold() {
+    const val = document.getElementById("threshold").value;
+    if(val === "") {
+        alert("Please enter a threshold value!");
+        return;
+    }
+    thresholdValue = val;
+    document.getElementById("current-threshold").innerText = `Current Threshold: ${thresholdValue}`;
+    alert(`Threshold set to ${thresholdValue}`);
+}
+
+function resetThreshold() {
+    thresholdValue = null;
+    document.getElementById("threshold").value = "";
+    document.getElementById("current-threshold").innerText = `Current Threshold: Not Set`;
+    alert("Threshold has been reset!");
+}
+</script>
+<script src="./backend/experimentControls.js"></script>
+
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plant Health Monitor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(to right, #b5fffc, #7ae582);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      text-align: center;
+      color: #1b4332;
+    }
+
+    .nav {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: #1b4332;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    h1 {
+      margin-top: 70px;
+      font-size: 2rem;
+      color: #081c15;
+    }
+
+    .container {
+      margin-top: 40px;
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: 320px;
+    }
+
+    .plant-section img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .card {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 15px;
+      color: white;
+    }
+
+    .temp-card {
+      background: #52b788;
+    }
+
+    .health-card {
+      background: #40916c;
+    }
+
+    .health-card.good { background: #74c69d; }
+    .health-card.warning { background: #ffb703; }
+    .health-card.danger { background: #e63946; }
+    .health-card.critical { background: #9d0208; }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .card-value {
+      font-size: 1.6rem;
+      margin-top: 8px;
+    }
+
+    .message {
+      margin-top: 10px;
+      font-weight: 600;
+      color: #1b4332;
+    }
+
+    .btn {
+      background: #1b4332;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      padding: 10px 25px;
+      font-size: 1rem;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #2d6a4f;
+    }
+
+    .sensor-badge {
+      background: #d8f3dc;
+      color: #1b4332;
+      border-radius: 20px;
+      padding: 6px 12px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #52b788;
+      border-radius: 50%;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <button class="nav-btn" title="Home" onclick="navigate('home')">🏠</button>
+    <button class="nav-btn" title="Achievements" onclick="navigate('achievements')">🏆</button>
+    <button class="nav-btn" title="Back" onclick="navigate('back')">←</button>
+  </div>
+
+  <h1>🌿 Plant Health Monitor</h1>
+
+  <div class="container">
+    <div class="plant-section">
+      <img id="plantImg" src="/app_src/assets/images/plant-removebg-preview.png" alt="Healthy Plant" />
+    </div>
+
+    <div class="card temp-card">
+      <div class="card-title">Temperature</div>
+      <div class="card-value">
+        🌡 <span id="tempValue">25</span>°C
+      </div>
+    </div>
+
+    <div id="healthCard" class="card health-card">
+      <div class="card-title">Plant Health</div>
+      <div class="card-value">
+        <span id="healthIcon">✅</span>
+        <span id="healthText">Excellent</span>
+      </div>
+    </div>
+
+    <div class="message" id="message">Perfect conditions for plant growth!</div>
+
+    <div class="sensor-badge">
+      <div class="status-dot"></div>
+      <span>IoT Sensor Active</span>
+    </div>
+
+    <button class="btn" onclick="navigate('next')">Continue →</button>
+  </div>
+
+  <script>
+    const PATHS = {
+      home: 'index.html',
+      achievements: 'achievements.html',
+      next: 'new1.html'
+    };
+
+    function navigate(action) {
+      switch (action) {
+        case 'home': window.location.href = PATHS.home; break;
+        case 'achievements': window.location.href = PATHS.achievements; break;
+        case 'back': window.history.back(); break;
+        case 'next': window.location.href = PATHS.next; break;
+      }
+    }
+
+    function updatePlantHealth(temp) {
+      let status, colorClass;
+      if (temp <= 18) { status = 'Critical'; colorClass = 'critical'; }
+      else if (temp < 20) { status = 'Good'; colorClass = 'good'; }
+      else if (temp <= 25) { status = 'Excellent'; colorClass = ''; }
+      else if (temp <= 30) { status = 'Fair'; colorClass = 'warning'; }
+      else { status = 'Poor'; colorClass = 'danger'; }
+
+      const card = document.getElementById('healthCard');
+      card.className = 'card health-card ' + colorClass;
+      document.getElementById('healthText').textContent = status;
+      document.getElementById('tempValue').textContent = temp;
+    }
+
+    window.onload = () => {
+      updatePlantHealth(25);
+    };
+  </script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

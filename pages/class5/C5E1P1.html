@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blinking LED</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(to bottom right, #0052cc, #99ccff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      overflow-x: hidden;
+      padding: 20px;
+      color: #fff;
+    }
+
+    /* Decorations */
+    .clip-top, .clip-bottom {
+      position: absolute;
+      opacity: 0.9;
+      max-width: 20vw;
+      height: auto;
+    }
+    .clip-top { top: 10px; left: 20px; }
+    .clip-bottom { bottom: 20px; right: 20px; }
+
+    /* Top icons */
+    .top-icons {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .top-icons img {
+      width: 50px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .top-icons img:hover { transform: scale(1.1); }
+
+    /* Title */
+    h1 {
+      margin-top: 60px;
+      background: #002080;
+      padding: 12px 36px;
+      border-radius: 14px;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    /* Content layout */
+    .content {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 50px;
+      align-items: center;
+      justify-items: center;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .board { width: 350px; }
+    .lion { width: 80%; max-width: 320px; height: auto; }
+
+    .led-icons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .led-icons img {
+      width: 40px;
+      height: 40px;
+      transition: transform 0.2s ease;
+    }
+    .led-icons img:hover {
+      transform: scale(1.1);
+    }
+
+    /* Control Buttons */
+    .controls {
+      margin-top: 30px;
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+    }
+
+    .btn-round {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-round:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    }
+
+    .btn-on { background: #00cc44; }
+    .btn-off { background: #e60000; }
+
+    /* --- CONTROL PANEL --- */
+    .control-panel {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 30px 40px;
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      transition: all 0.4s ease;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+
+    .control-title {
+      font-size: 1.6rem;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .control-subtext {
+      font-size: 1rem;
+      color: #e0e0e0;
+      margin-bottom: 10px;
+    }
+
+    .control-panel input {
+      width: 180px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.9);
+      color: #000;
+      font-weight: bold;
+      font-size: 1.1rem;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .control-panel input:focus {
+      border-color: #00e0ff;
+      box-shadow: 0 0 12px rgba(0,224,255,0.7);
+      transform: scale(1.03);
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 25px;
+    }
+
+    .control-buttons button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 26px;
+      border-radius: 14px;
+      font-weight: bold;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: #fff;
+    }
+
+    .control-buttons button img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, #00ffcc, #0099ff);
+      box-shadow: 0 4px 15px rgba(0,255,200,0.5);
+    }
+
+    .send-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(0,255,255,0.6);
+    }
+
+    .reset-btn {
+      background: linear-gradient(135deg, #ff4d4d, #ff9966);
+      box-shadow: 0 4px 15px rgba(255,77,77,0.5);
+    }
+
+    .reset-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(255,100,100,0.6);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 1rem;
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Next Button */
+    .next-btn {
+      margin-top: 50px;
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.2rem;
+      padding: 14px 32px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+    }
+
+    .next-btn:hover { transform: scale(1.05); }
+
+    .next-btn img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .content { grid-template-columns: 1fr; }
+      .lion { width: 70%; margin-top: 20px; }
+      .control-panel { width: 90%; padding: 25px; margin-top: 30px; }
+      .control-buttons { flex-direction: column; width: 100%; }
+      .control-buttons button { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Decorations -->
+  <img src="../../assets/images/clip-top.png" alt="Top Decoration" class="clip-top">
+  <div class="top-icons">
+    <img src="../../assets/icons/home.png" alt="Home" onclick="goHome()">
+    <img src="../../assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()">
+    <img src="../../assets/icons/logout.png" alt="Back" onclick="goBack()">
+  </div>
+
+  <h1>Blinking LED</h1>
+
+  <div class="content">
+    <div>
+      <img src="../images/board.png" alt="Arduino Board" class="board">
+      <div class="led-icons">
+        <img src="../../assets/images/led.png" alt="LED 1">
+        <img src="../../assets/images/led.png" alt="LED 2">
+        <img src="../../assets/images/led.png" alt="LED 3">
+        <img src="../../assets/images/led.png" alt="LED 4">
+        <img src="../../assets/images/led.png" alt="LED 5">
+      </div>
+
+      <div class="controls">
+        <button class="btn-round btn-on">ON</button>
+        <button class="btn-round btn-off">OFF</button>
+      </div>
+    </div>
+
+    <div>
+      <img src="../../assets/images/lion.png" alt="Lion" class="lion" id="lion">
+    </div>
+  </div>
+
+  <!-- ✨ Enhanced Control Panel -->
+  <div class="control-panel">
+    <h2 class="control-title">🔧 LED Control Panel</h2>
+    <p class="control-subtext">Adjust brightness or trigger LED response</p>
+    <input type="number" id="ledValue" placeholder="Enter LED value (0–255)">
+    <div class="control-buttons">
+      <button class="send-btn" onclick="sendValue()">
+        <img src="../../assets/icons/send.png" alt="Send">
+        <span>Set</span>
+      </button>
+      <button class="reset-btn" onclick="resetValue()">
+        <img src="../../assets/icons/logout.png" alt="Reset">
+        <span>Reset</span>
+      </button>
+    </div>
+  </div>
+
+  <button class="next-btn" onclick="window.location.href='C5E2.html'">
+    NEXT EXPERIMENT <img src="../../assets/icons/arrow.png" alt="Next Icon">
+  </button>
+
+  <img src="../images/clip-bottom.png" alt="Bottom Decoration" class="clip-bottom">
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../../assetsvoice/VOICE OVER PAGE 7.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="serial-handler.js"></script>
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+    const toast = document.getElementById("toast");
+
+    // Audio Animation
+    audio.play().then(() => {
+      lion.src = "../images/lion.gif";
+    }).catch(() => {
+      alert("Click anywhere to start the experiment audio!");
+      document.body.addEventListener("click", () => audio.play(), { once: true });
+    });
+
+    audio.addEventListener("play", () => {
+      lion.src = "../../assets/images/lion.gif";
+    });
+    audio.addEventListener("ended", () => {
+      lion.src = "../../assets/images/lion.png";
+    });
+
+    // Navigation
+    function goHome() { window.location.href = "../welcome.html"; }
+    function goAchievements() { window.location.href = "../page4.html"; }
+    function goBack() { window.history.back(); }
+
+    // Toast Notification
+    function showToast(msg, type = "info") {
+      toast.textContent = msg;
+      toast.style.background =
+        type === "error"
+          ? "linear-gradient(135deg, #ff4d4d, #ff9966)"
+          : "linear-gradient(135deg, #00ffcc, #0099ff)";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    // Serial Communication
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send("SET_EXPERIMENT_1");
+      }
+
+      if (window.serialAPI && window.serialAPI.onData) {
+        window.serialAPI.onData((data) => {
+          if (data.type === "navigate" && data.target) {
+            window.location.href = data.target;
+          }
+        });
+      }
+    });
+
+    // Send / Reset Handlers
+    function sendValue() {
+      const val = document.getElementById("ledValue").value;
+      if (!val) {
+        showToast("⚠️ Please enter a value first!", "error");
+        return;
+      }
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send(`LED_VALUE:${val}`);
+        showToast(`✅ Sent value: ${val}`);
+      } else {
+        showToast("❌ Serial not connected", "error");
+      }
+    }
+
+    function resetValue() {
+      document.getElementById("ledValue").value = "";
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send("LED_RESET");
+        showToast("🔄 LED Reset Sent");
+      } else {
+        showToast("❌ Serial not connected", "error");
+      }
+    }
+  </script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

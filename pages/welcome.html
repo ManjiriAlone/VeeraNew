@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome Buddy</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #d8ebc7, #ffffff, #d6defc);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Clip arts */
+    .clip-top {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 150px;
+      opacity: 0.8;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 180px;
+      opacity: 0.8;
+    }
+
+    .heading {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #000;
+      margin-bottom: 10px;
+    }
+
+    .subheading {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: #444;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .main-content img {
+      max-width: 300px;
+      height: auto;
+    }
+
+    .btn {
+      margin-top: 40px;
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(to right, #5ec5ff, #a17dff);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .heading {
+        font-size: 1.8rem;
+      }
+      .subheading {
+        font-size: 1rem;
+      }
+      .main-content img {
+        max-width: 200px;
+      }
+    }
+    .lion{
+    width: 30%;
+    object-fit: contain; /* keeps aspect ratio without distortion */
+    margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top-left clip art -->
+    <img src="../assets/images/clip-top.png" alt="Top Clip" class="clip-top">
+
+  <!-- Text -->
+  <h1 class="heading">WELCOME BUDDY!</h1>
+  <p class="subheading">Nice to See You Future Engineer.</p>
+
+  <!-- Center images -->
+  <div class="main-content">
+    <img src="../assets/images/board.png" alt="VEERA Board">
+    <img id="lion" src="../assets/images/lion.png" class="lion" alt="Lion Mascot">
+  </div>
+
+  <!-- Continue button -->
+  <button class="btn" onclick="goNext()">Continue</button>
+
+  <!-- Bottom-right clip art -->
+  <img src="../assets/images/clip-bottom.png" alt="Bottom Clip" class="clip-bottom">
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../assets/voice/VOICE OVER PAGE 2.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+
+    // Try autoplay
+    audio.play().then(() => {
+      lion.src = "../assets/images/lion.gif"; // change to GIF when audio starts
+    }).catch(() => {
+      console.log("Autoplay blocked, waiting for user interaction...");
+      document.body.addEventListener("click", () => {
+        audio.play();
+      }, { once: true });
+    });
+
+    // When audio starts
+    audio.addEventListener("play", () => {
+      lion.src = "../assets/images/lion.gif";
+    });
+
+    // When audio ends
+    audio.addEventListener("ended", () => {
+      lion.src = "../assets/images/lion.png";
+    });
+
+    function goNext() {
+        window.location.href = "enterName.html"; 
+    }
+  </script>
+</body>
+</html>

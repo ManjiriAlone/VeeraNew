@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Level</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      background: linear-gradient(to right, #d0d9f7, #ffffff, #fcd6d6);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .clip-top {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 150px;
+      opacity: 0.8;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 180px;
+      opacity: 0.8;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #000;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .lion {
+      width: 30%;
+      margin-bottom: 20px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .level-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 25px;
+      min-width: 180px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #fff;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .level-card img {
+      width: 28px;
+      height: 28px;
+    }
+
+    .level-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .blue {
+      background: #3b7dff;
+    }
+
+    .red {
+      background: #ff5733;
+    }
+
+    .green {
+      background: #4caf50;
+    }
+
+    .top-icons {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .top-icons img {
+      width: 50px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .top-icons img:hover {
+      transform: scale(1.1);
+    }
+
+    a {
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Top-left clip art -->
+  <img src="../assets/images/clip-top.png" alt="Top Clip" class="clip-top">
+
+  <!-- Top-right navigation icons -->
+  <div class="top-icons">
+    <img src="../assets/icons/home.png" alt="Home" onclick="goHome()">
+    <img src="../assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()">
+    <img src="../assets/icons/logout.png" alt="Back" onclick="goBack()">
+  </div>
+
+  <!-- Heading -->
+  <h1 id="welcome">Let's Start Buddy</h1>
+  <h2>Select Level</h2>
+
+  <!-- Lion and Class Buttons -->
+  <div class="main">
+    <img src="../assets/images/lion.png" alt="Lion" class="lion" id="lion">
+
+    <div class="row">
+      <a href="class5/class5list.html">
+        <button class="level-card blue">
+          <!-- <img src="../assets/icons/tool.png" alt=""> -->
+          <img src="../assets/icons/brain.png" alt="">
+           Class 5
+        </button>
+      </a>
+      <a href="class10/class10list.html">
+        <button class="level-card blue">
+          <img src="../assets/icons/computer.png" alt="">
+           Class 10
+        </button>
+      </a>
+    </div>
+
+    <div class="row">
+      <a href="class6/class6list.html">
+        <button class="level-card red">
+          <img src="../assets/icons/certificate.png" alt=""> 
+          Class 6</button>
+      </a>
+      <a href="class9/class9list.html">
+        <button class="level-card green">
+          <img src="../assets/icons/cap.png" alt=""> 
+          Class 9</button>
+      </a>
+    </div>
+
+    <div class="row">
+      <a href="./class7/class7list.html">
+        <button class="level-card green">
+          <img src="../assets/icons/edu.png" alt=""> 
+          Class 7</button>
+      </a>
+      <a href="./class8/class8list.html">
+        <button class="level-card red">
+          <img src="../assets/icons/pen.png" alt=""> 
+          Class 8</button>
+      </a>
+    </div>
+
+    <div class="row">
+      <button class="level-card blue">
+        <img src="../assets/icons/book.png" alt="">
+         Menu</button>
+    </div>
+  </div>
+
+  <!-- Bottom-right clip art -->
+  <img src="../assets/images/clip-bottom.png" alt="Bottom Clip" class="clip-bottom">
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../assets/voice/VOICE OVER PAGE 4.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="serial-handler.js"></script>
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+
+    // Autoplay with click fallback
+    audio.play().then(() => {
+      lion.src = "./images/lion.gif";
+    }).catch(() => {
+      document.body.addEventListener("click", () => {
+        audio.play();
+      }, { once: true });
+    });
+
+    audio.addEventListener("play", () => { lion.src = "../assets/images/lion.gif"; });
+    audio.addEventListener("ended", () => { lion.src = "../assets/images/lion.png"; });
+
+    // Serial API navigation
+    if (window.serialAPI) {
+      window.serialAPI.onData((data) => {
+        if (data.type === "class") {
+          if (data.value === "5") window.location.href = "class5/class5list.html";
+          if (data.value === "6") window.location.href = "class6/class6list.html";
+          if (data.value === "7") window.location.href = "class7/class7list.html";
+          if (data.value === "8") window.location.href = "class8/class8list.html";
+          if (data.value === "9") window.location.href = "class9/class9list.html";
+          if (data.value === "10") window.location.href = "class10/class10list.html";
+        }
+      });
+    }
+
+    // Navigation functions
+    function goHome() { window.location.href = "welcome.html"; }
+    function goAchievements() { window.location.href = "page4.html"; }
+    function goBack() { window.history.back(); }
+
+    // Optional: send class/experiment if selects exist
+    const classSelect = document.getElementById('classSelect');
+    if (classSelect) {
+      classSelect.addEventListener('change', (e) => {
+        window.serialAPI.sendToKit(`#c:${e.target.value}$`);
+      });
+    }
+
+    const experimentSelect = document.getElementById('experimentSelect');
+    if (experimentSelect) {
+      experimentSelect.addEventListener('change', (e) => {
+        window.serialAPI.sendToKit(`#e:${e.target.value}$`);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Light Control System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #e0f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            background-color: #00796b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+        header h1 { text-align: center; flex: 1; font-size: 24px; }
+        .nav-buttons { display: flex; align-items: center; gap: 12px; }
+        .nav-buttons img {
+            width: 32px; height: 32px; cursor: pointer;
+            transition: transform 0.3s ease; border-radius: 50%;
+        }
+        .nav-buttons img:hover { transform: scale(1.1); background-color: rgba(255,255,255,0.2); }
+
+        main {
+            flex: 1; display: flex; align-items: center; justify-content: center; position: relative; padding: 40px 20px;
+        }
+
+        .system-container {
+            display: flex; align-items: center; justify-content: center; position: relative; gap: 50px;
+        }
+
+        .sensor img { width: 140px; height: auto; }
+        .arduino img { width: 250px; height: auto; z-index: 2; }
+        .lion img { width: 160px; height: auto; }
+
+        .line {
+            position: absolute;
+            top: 50%; left: 150px; width: 150px; height: 3px; background-color: #00796b;
+            transform: translateY(-50%); z-index: 1;
+        }
+
+        footer {
+            background-color: #00796b;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        footer button {
+            background-color: #004d40;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        footer button:hover { background-color: #26a69a; }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 18px; }
+            .system-container { flex-direction: column; }
+            .line { display: none; }
+            .lion { margin-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>💡 Automatic Light Control System</h1>
+        <div class="nav-buttons">
+            <a href="welcome.html"><img src="/app_src/assets/icons/home.png" alt="Home"></a>
+            <a href="javascript:history.back()"><img src="/app_src/assets/icons/logout.png" alt="Logout"></a>
+            <a href="page4.html"><img src="/app_src/assets/icons/achievements.png" alt="Achievements"></a>
+        </div>
+    </header>
+
+    <main>
+        <div class="system-container">
+            <div class="sensor">
+                <img src="/app_src/assets/images/LDR.png" alt="LDR Sensor">
+                <div class="line"></div>
+            </div>
+
+            <div class="arduino">
+                <img src="/app_src/assets/images/lion.png" alt="Arduino Board">
+            </div>
+
+            <div class="lion">
+                <img src="/app_src/assets/images/lion.gif" alt="Lion Animation">
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <button onclick="goNext()">Next</button>
+    </footer>
+
+    <script>
+        function goNext() {
+            window.location.href = "class6E5.html";
+        }
+    </script>
+    
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Detection System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #e0f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            background-color: #00796b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+
+        header h1 {
+            text-align: center;
+            flex: 1;
+            font-size: 24px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-buttons img {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .nav-buttons img:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2dfdb 100%);
+        }
+
+        .scene {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .animation-scene {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid #00796b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .sensor-animated {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sensor-body {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+            border-radius: 12px;
+            position: relative;
+            border: 2px solid #00474a;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .arduino-middle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .arduino-board {
+            width: 150px;
+            height: 200px;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            border-radius: 10px;
+            position: relative;
+            border: 2px solid #0d47a1;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-pulse {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ff5722;
+            border-radius: 50%;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: alertPulse 1s ease-out infinite;
+        }
+
+        @keyframes alertPulse {
+            0% { width: 30px; height: 30px; opacity: 1; }
+            100% { width: 70px; height: 70px; opacity: 0; }
+        }
+
+        .person {
+            position: absolute;
+            animation: personWalk 4s ease-in-out infinite;
+        }
+
+        .person-head {
+            width: 25px; height: 25px; background: #d4a574; border-radius: 50%; margin: 0 auto; position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .person-head::before {
+            content: ''; position: absolute; width: 8px; height: 8px; background: black; border-radius: 50%; top: 8px; left: 6px;
+        }
+
+        .person-head::after {
+            content: ''; position: absolute; width: 8px; height: 8px; background: black; border-radius: 50%; top: 8px; right: 6px;
+        }
+
+        .person-body {
+            width: 20px; height: 35px; background: #2196f3; margin: 3px auto 0; border-radius: 5px;
+        }
+
+        .person-legs { width: 20px; height: 25px; margin: 0 auto; display: flex; gap: 2px; justify-content: center; }
+        .leg { width: 8px; height: 25px; background: #333; border-radius: 4px; animation: legWalk 0.6s ease-in-out infinite; }
+        .leg:nth-child(2) { animation-delay: 0.3s; }
+
+        @keyframes legWalk {
+            0%, 100% { transform: rotateX(0deg); }
+            50% { transform: rotateX(30deg); }
+        }
+
+        @keyframes personWalk {
+            0% { left: 200px; }
+            50% { left: 350px; }
+            100% { left: 200px; }
+        }
+
+        .line-sensor-to-arduino {
+            position: absolute; height: 2px; background: linear-gradient(90deg, #ff9800, #00796b);
+            top: 50%; left: 130px; width: 200px; transform: translateY(-50%);
+            animation: lineFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes lineFlow {
+            0%,100% { box-shadow: 0 0 5px rgba(0,121,107,0.5); }
+            50% { box-shadow: 0 0 15px rgba(255,152,0,0.8); }
+        }
+
+        .explanation {
+            background: white; border-radius: 15px; padding: 25px; border: 2px solid #00796b;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .explanation h3 {
+            color: #00796b; margin-bottom: 15px; font-size: 18px; text-align: center;
+        }
+
+        footer {
+            background-color: #00796b; color: white; text-align: center; padding: 15px 0;
+        }
+
+        footer button {
+            background-color: #004d40; color: white; border: none; padding: 10px 25px;
+            border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s;
+        }
+        footer button:hover { background-color: #26a69a; }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 18px; }
+            .animation-scene { height: 300px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🏃 Motion Detection System</h1>
+        <div class="nav-buttons">
+            <a href="welcome.html"><img src="/app_src/assets/icons/home.png" alt="Home"></a>
+            <a href="javascript:history.back()"><img src="/app_src/assets/icons/logout.png" alt="Logout"></a>
+            <a href="page4.html"><img src="/app_src/assets/icons/achievements.png" alt="Achievements"></a>
+        </div>
+    </header>
+
+    <main>
+        <div class="scene">
+            <div class="animation-scene">
+                <div class="sensor-animated">
+                    <div class="sensor-body">
+                        <img src="/app_src/assets/images/motion.png" alt="sensor" style="width: 80px; height: auto; margin-top: 10px;">
+                    </div>
+                </div>
+                <div class="line-sensor-to-arduino"></div>
+                <div class="arduino-middle">
+                    <div class="alert-pulse"></div>
+                    <div class="arduino-board">
+                        <img src="/app_src/assets/images/board.png" alt="Arduino" style="width: 150px; height: auto;">
+                    </div>
+                </div>
+                <div class="person">
+                    <div class="person-head"></div>
+                    <div class="person-body"></div>
+                    <div class="person-legs">
+                        <div class="leg"></div>
+                        <div class="leg"></div>
+                    </div>
+                </div>
+                <div style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%);">
+                    <img src="/app_src/assets/images/lion.gif" alt="Lion Animation" style="width: 120px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));">
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h3>How Motion Detection Works</h3>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <button onclick="goNext()">Next</button>
+    </footer>
+
+    <script>
+        function goNext() {
+            window.location.href = "class6E6.html"; // Redirects to the next page
+        }
+    </script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

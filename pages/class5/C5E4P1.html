@@ -1,0 +1,334 @@
+../../assets<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Water Level Alerting</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(180deg, #3b00ff 0%, #ffffff 100%);
+      position: relative;
+      text-align: center;
+      overflow-x: hidden;
+      color: #222;
+    }
+
+    /* Decorative Clips */
+    .clip-top {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      width: 130px;
+      opacity: 0.9;
+    }
+    .clip-bottom {
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      width: 160px;
+      opacity: 0.9;
+    }
+
+    /* Header */
+    .header-container {
+      width: 90%;
+      margin: 40px auto 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .heading {
+      font-size: 2rem;
+      font-weight: 700;
+      padding: 12px 25px;
+      background: #24126a;
+      color: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .top-icons {
+      position: absolute;
+      right: 0;
+      display: flex;
+      gap: 18px;
+    }
+
+    .top-icons img {
+      width: 45px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .top-icons img:hover {
+      transform: scale(1.15);
+    }
+
+    /* Main Content */
+    .content {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .board {
+      width: 320px;
+      filter: drop-shadow(0px 5px 10px rgba(0, 0, 0, 0.2));
+    }
+
+    .item {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 15px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .item:hover {
+      transform: translateY(-5px);
+    }
+
+    .item img {
+      width: 160px;
+    }
+
+    .item p {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 25px;
+      border: none;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.2s ease, background 0.3s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-measure {
+      background: #38b000;
+    }
+
+    .btn-set {
+      background: #0077ff;
+    }
+
+    .btn-reset {
+      background: #d62828;
+    }
+
+    /* Distance bar */
+    #distance-bar {
+      width: 180px;
+      height: 20px;
+      border-radius: 10px;
+      background: #ddd;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #distance-bar span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: green;
+      transition: width 0.5s ease, background 0.3s;
+    }
+
+    /* Input Threshold */
+    .threshold-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .threshold-container input {
+      width: 80px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #888;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* Lion */
+    .lion {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .lion:hover {
+      transform: scale(1.05);
+    }
+
+    /* Next Button */
+    .next-btn {
+      margin: 40px 0;
+      padding: 14px 35px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: #24126a;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s;
+    }
+
+    .next-btn:hover {
+      transform: scale(1.05);
+      background: #3825aa;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Clips -->
+  <img src="../../assets/images/clip-top.png" class="clip-top" alt="Clip top" />
+  <img src="../../assets/images/clip-bottom.png" class="clip-bottom" alt="Clip bottom" />
+
+  <!-- Header -->
+  <div class="header-container">
+    <div class="heading">💧 Water Level Alerting</div>
+    <div class="top-icons">
+      <img src="../../assets/icons/home.png" alt="Home" onclick="goHome()" />
+      <img src="../../assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()" />
+      <img src="../../assets/icons/logout.png" alt="Back" onclick="goBack()" />
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <img src="../../assets/images/waterlevel.png" alt="Board" class="board" />
+
+    <!-- Ultrasonic Sensor -->
+    <div class="item">
+      <img src="../../assets/images/ultrasonic.png" alt="Ultrasonic Sensor" />
+      <p>Ultrasonic Sensor</p>
+      <button id="btn-measure" class="btn btn-measure">Measure Distance</button>
+      <div id="distance-result">Distance: -- cm</div>
+      <div id="distance-bar"><span></span></div>
+
+      <div class="threshold-container">
+        <label for="threshold">Threshold:</label>
+        <input type="number" id="threshold" min="1" max="100" value="30" />
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <button id="btn-set" class="btn btn-set">Set Threshold</button>
+        <button id="btn-reset" class="btn btn-reset">Reset</button>
+      </div>
+    </div>
+
+    <!-- Buzzer -->
+    <div class="item">
+      <img src="../../assets/images/buzzer.png" alt="Buzzer" style="width:120px;" />
+      <p>Buzzer</p>
+    </div>
+
+    <!-- Lion -->
+    <div class="item">
+      <img src="../../assets/images/lion.png" alt="Lion Mascot" class="lion" id="lion" />
+    </div>
+  </div>
+
+  <!-- Next Experiment -->
+  <button class="next-btn" onclick="goNext()">NEXT EXPERIMENT 🦁</button>
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../../assets/voice/VOICE OVER PAGE 13.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+    const result = document.getElementById("distance-result");
+    const bar = document.querySelector("#distance-bar span");
+
+    audio.play().catch(() => {
+      document.body.addEventListener("click", () => audio.play(), { once: true });
+    });
+
+    audio.addEventListener("play", () => (lion.src = "../../assets/images/lion.gif"));
+    audio.addEventListener("ended", () => (lion.src = "../../assets/images/lion.png"));
+
+    // Navigation
+    function goNext() { window.location.href = "C5E5.html"; }
+    function goHome() { window.location.href = "../welcome.html"; }
+    function goAchievements() { window.location.href = "../page4.html"; }
+    function goBack() { window.history.back(); }
+
+    // Serial Communication
+    document.getElementById("btn-measure").addEventListener("click", () => {
+      window.serialAPI.send("MEASURE_DISTANCE");
+    });
+
+    document.getElementById("btn-set").addEventListener("click", () => {
+      const threshold = document.getElementById("threshold").value;
+      window.serialAPI.send(`SET_THRESHOLD:${threshold}`);
+      alert(`Threshold set to ${threshold} cm ✅`);
+    });
+
+    document.getElementById("btn-reset").addEventListener("click", () => {
+      document.getElementById("threshold").value = 30;
+      window.serialAPI.send("RESET_THRESHOLD");
+      alert("Threshold reset to default (30 cm) 🔁");
+    });
+
+    // Receive data
+    window.serialAPI.onData((data) => {
+      if (data.type === "distance") {
+        const dist = data.value;
+        result.innerText = `Distance: ${dist} cm`;
+
+        let barWidth = Math.min(100, (dist / 100) * 100);
+        bar.style.width = `${barWidth}%`;
+
+        if (dist > 50) bar.style.background = "green";
+        else if (dist > 20) bar.style.background = "orange";
+        else bar.style.background = "red";
+      }
+    });
+  </script>
+
+  <script src="../serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

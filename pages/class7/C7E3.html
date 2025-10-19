@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome Air Quality Project</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* ✨ VIBRANT ANIMATED GRADIENT BACKGROUND ✨ */
+            background: linear-gradient(-45deg, #f7b733, #fc4a1a, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- ✨ New Keyframe Animations ✨ --- */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            /* ✨ FUN ANIMATED TEXT COLOR ✨ */
+            background: linear-gradient(45deg, #f32170, #ff6b08, #cf23cf, #eedd44);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .top-icons img {
+            width: 40px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .top-icons img:hover {
+            transform: scale(1.15) rotate(10deg);
+        }
+
+        /* --- Main Content Area --- */
+        .container {
+            flex-grow: 1;
+            display: flex;
+            width: 100%;
+            padding: 40px;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        /* --- Left Column (Main Project Details) --- */
+        .main-content {
+            flex: 2;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .main-content h2 {
+            font-size: 1.8rem;
+            color: #ff6f61; /* Bright coral color */
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #ffaf40; /* Sunny orange border */
+            padding-bottom: 5px;
+            animation: fadeInUp 0.5s ease-out 0.2s backwards;
+        }
+
+        .components-grid, .board-section {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .component-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            width: 180px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* ✨ CARD LOAD-IN ANIMATION ✨ */
+            animation: fadeInUp 0.5s ease-out backwards;
+        }
+
+        /* Stagger the animation for each card */
+        .component-card:nth-child(1) { animation-delay: 0.4s; }
+        .component-card:nth-child(2) { animation-delay: 0.6s; }
+        .component-card:nth-child(3) { animation-delay: 0.8s; }
+
+
+        .component-card:hover {
+            transform: translateY(-12px) rotate(3deg);
+            box-shadow: 0 12px 30px rgba(252, 74, 26, 0.3); /* Bright orange glow */
+        }
+
+        .component-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 10 px;
+        }
+
+        .component-card h3 {
+            font-size: 1.1rem;
+            color: #005a8d;
+            font-weight: 600;
+        }
+
+        #board-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            animation: fadeInUp 0.5s ease-out 1s backwards;
+        }
+        #board-image:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        /* --- Right Column (Lion Explainer) --- */
+        .explainer-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 20px;
+            position: sticky;
+            top: 120px;
+        }
+
+        .lion-gif {
+            width: 250px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .speech-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 3px solid #23a6d5; /* Bright blue border */
+            width: 100%;
+            max-width: 400px;
+            margin-top: -30px;
+        }
+
+        .speech-box::before {
+            content: '';
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 12px;
+            border-style: solid;
+            border-color: transparent transparent #23a6d5 transparent;
+        }
+
+        #typewriter-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #2c3e50;
+            min-height: 100px;
+        }
+        
+        .blinking-cursor {
+            font-weight: bold;
+            color: #ff6f61;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { color: transparent; }
+            50% { color: #ff6f61; }
+        }
+
+        .video-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #fff;
+        }
+
+        .video-container video {
+            width: 100%;
+            display: block;
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 20px 40px;
+            text-align: right;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #4caf50, #81c784); /* ✨ FUN GREEN GRADIENT BUTTON ✨ */
+            color: #fff;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 128, 0, 0.3);
+            text-transform: uppercase;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 128, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Air Quality Detective</h1>
+        <div class="top-icons">
+            <img src="/app_src/assets/icons/home.png" alt="Home" onclick="goHome()">
+            <img src="/app_src/assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()">
+            <img src="/app_src/assets/icons/logout.png" alt="Back" onclick="goBack()">
+        </div>
+    </header>
+
+    <div class="container">
+        <main class="main-content">
+            <h2>The Project Parts! 🛠</h2>
+            <div class="components-grid">
+                <div class="component-card">
+                    <img src="/app_src/assets/images/gas_sensor.jpg" alt="Gas Sensor">
+                    <h3>Gas Sensor</h3>
+                </div>
+                <div class="component-card">
+                    <img src="/app_src/assets/images/ultrasonic.png" alt="Ultrasonic Sensor">
+                    <h3>Ultrasonic Sensor</h3>
+                </div>
+                <div class="component-card">
+                    <img src="/app_src/assets/images/buzzer.png" alt="Buzzer">
+                    <h3>Buzzer</h3>
+                </div>
+            </div>
+
+            <h2>The Brains of the Operation! 🧠</h2>
+            <div class="board-section">
+                 <img src="/app_src/assets/images/board.png" alt="Main Circuit Board" id="board-image">
+            </div>
+        </main>
+
+        <aside class="explainer-section">
+            <div class="lion-container">
+                <img src="/app_src/assets/images/lion.gif" alt="Explainer Lion" class="lion-gif">
+            </div>
+            <div class="speech-box">
+                <p id="typewriter-text"><span class="blinking-cursor">|</span></p>
+            </div>
+
+            <div class="video-container">
+                 <video controls autoplay muted loop>
+                    <!-- <source src="../videos/Factory with smoke; pollution sensor value controls emission.mp4" type="video/mp4"> -->
+                    <source src="/app_src/assets/videos/Factory with smoke; pollution sensor value controls emission.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </aside>
+    </div>
+
+    <footer>
+        <button class="next-btn" onclick="goToNextPage()">Next Adventure!</button>
+    </footer>
+
+    <audio id="typing-sound" src="/app_src/assets/voice/typing_sound.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textElement = document.getElementById('typewriter-text');
+            const typingSound = document.getElementById('typing-sound');
+            // ✨ UPDATED KID-FRIENDLY TEXT ✨
+            const textToType = "Hey explorer! 🚀 Let's check out this project that sniffs the air! We'll use these cool parts to see if the air is clean. Watch the video to see it in action, then click 'Next' to continue our adventure!";
+            let charIndex = 0;
+
+            textElement.innerHTML = '<span class="blinking-cursor">|</span>';
+
+            function typeWriter() {
+                if (charIndex < textToType.length) {
+                    if(typingSound) {
+                        typingSound.currentTime = 0;
+                        typingSound.play().catch(e => {});
+                    }
+                    textElement.innerHTML = textToType.substring(0, charIndex + 1) + '<span class="blinking-cursor">|</span>';
+                    charIndex++;
+                    setTimeout(typeWriter, 50); // A little faster for more energy
+                } else {
+                    textElement.innerHTML = textToType;
+                }
+            }
+            
+            setTimeout(typeWriter, 1000);
+        });
+
+        // Navigation functions (placeholders)
+        function goHome() {
+            alert("Let's go to the Home page!");
+            // window.location.href = "home.html";
+        }
+        function goAchievements() {
+            alert("Let's check out your awesome Achievements!");
+            // window.location.href = "achievements.html";
+        }
+        function goBack() {
+            window.history.back();
+        }
+        function goToNextPage() {
+            alert("On to the next cool project!");
+            window.location.href = "C7E4.html";
+        }
+    </script>
+    <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

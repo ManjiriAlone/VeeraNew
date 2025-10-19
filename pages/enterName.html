@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Name</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #d0d9f7, #ffffff, #fcd6d6);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Clip arts */
+    .clip-top {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 150px;
+      opacity: 0.8;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 180px;
+      opacity: 0.8;
+    }
+
+    .heading {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #000;
+    }
+
+    .input-box {
+      margin: 20px 0;
+      padding: 15px 25px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 40px;
+      text-align: center;
+      width: 280px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      outline: none;
+    }
+
+    .btn {
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(to right, #5ec5ff, #a17dff, #ff4dff);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .mascot {
+      
+          width: 10%;   /* fixed width */
+    object-fit: contain; /* keeps aspect ratio without distortion */
+    margin-bottom: 20px;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Top-left clip art -->
+  <img src="../assets/images/clip-top.png" alt="Top Clip" class="clip-top">
+
+  <!-- Heading -->
+  <h1 class="heading">Enter your name to start playing</h1>
+
+  <!-- Input + Button -->
+  <input type="text" id="username" class="input-box" placeholder="YOUR NAME">
+  <button class="btn" onclick="goNext()">Continue</button>
+
+  <!-- Lion Mascot -->
+  <img id="lion" src="../assets/images/lion.png" alt="Lion Mascot" class="mascot">
+
+  <!-- Bottom-right clip art -->
+  <img src="../assets/images/clip-bottom.png" alt="Bottom Clip" class="clip-bottom">
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../assets/voice/VOICE OVER PAGE 3.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+
+    // Try autoplay
+    audio.play().then(() => {
+      lion.src = "../assets/images/lion.gif"; // switch to GIF when audio starts
+    }).catch(() => {
+      console.log("Autoplay blocked, waiting for user interaction...");
+      document.body.addEventListener("click", () => {
+        audio.play();
+      }, { once: true });
+    });
+
+    // When audio starts
+    audio.addEventListener("play", () => {
+      lion.src = "../assets/images/lion.gif";
+    });
+
+    // When audio ends
+    audio.addEventListener("ended", () => {
+      lion.src = "../assets/images/lion.png";
+    });
+
+    // Continue button
+    function goNext() {
+      const name = document.getElementById("username").value;
+      if (name.trim() === "") {
+        alert("Please enter your name!");
+      } else {
+        // Example: redirect with name
+        window.location.href = "page4.html?user=" + encodeURIComponent(name);
+      }
+    }
+  </script>
+  <script src="serial-handler.js"></script>
+</body>
+</html>

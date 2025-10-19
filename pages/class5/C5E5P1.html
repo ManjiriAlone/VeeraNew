@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Lighting System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(180deg, #f87707 0%, #fff 100%);
+      position: relative;
+      text-align: center;
+      overflow-x: hidden;
+      padding: 20px 10px;
+    }
+
+    /* Clip arts */
+    .clip-top {
+      position: absolute;
+      top: 20px;
+      left: 25px;
+      width: 120px;
+      opacity: 0.9;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 15px;
+      right: 25px;
+      width: 150px;
+      opacity: 0.9;
+    }
+
+    /* Heading */
+    .heading {
+      margin-top: 70px;
+      font-size: 2rem;
+      font-weight: 700;
+      padding: 12px 25px;
+      background: #4a830d;
+      color: white;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Top Nav */
+    .bottom-icons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 15px;
+    }
+
+    .bottom-icons img {
+      width: 45px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .bottom-icons img:hover {
+      transform: scale(1.15);
+    }
+
+    /* Main Content */
+    .content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 35px;
+      margin-top: 40px;
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .board {
+      width: 320px;
+      max-width: 90%;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .item {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      width: 220px;
+      transition: transform 0.2s ease;
+    }
+
+    .item:hover {
+      transform: translateY(-5px);
+    }
+
+    .item img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .item p {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: 5px;
+    }
+
+    /* Buttons */
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.2s ease, background 0.3s;
+    }
+
+    .btn-on {
+      background: #38b000;
+    }
+
+    .btn-off {
+      background: #d62828;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Threshold Controls */
+    .threshold-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .threshold-container input {
+      width: 100px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #888;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .threshold-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-set {
+      background: #0077ff;
+    }
+
+    .btn-reset {
+      background: #ff8c00;
+    }
+
+    /* Lion */
+    .lion {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .lion:hover {
+      transform: scale(1.05);
+    }
+
+    /* Next Button */
+    .next-btn {
+      margin-top: 40px;
+      padding: 14px 35px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .next-btn:hover {
+      transform: scale(1.05);
+      background: #000;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .content {
+        flex-direction: column;
+        align-items: center;
+      }
+      .board {
+        margin-bottom: 20px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .heading {
+        font-size: 1.5rem;
+      }
+      .btn {
+        font-size: 0.85rem;
+      }
+      .lion {
+        width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Clip Arts -->
+  <img src="../../assets/images/clip-top.png" class="clip-top" alt="Top Clip" />
+  <img src="../../assets/images/clip-bottom.png" class="clip-bottom" alt="Bottom Clip" />
+
+  <!-- Navigation Icons -->
+  <div class="bottom-icons">
+    <img src="../../assets/icons/home.png" alt="Home" onclick="goHome()" />
+    <img src="../../assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()" />
+    <img src="../../assets/icons/logout.png" alt="Back" onclick="goBack()" />
+  </div>
+
+  <!-- Heading -->
+  <div class="heading">🏠 Home Lighting System</div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <img src="../../assets/images/touch.png" alt="Board" class="board" />
+
+    <!-- Motion Sensor -->
+    <div class="item">
+      <img src="../../assets/images/motion.png" alt="Motion Sensor" />
+      <p>Motion Sensor</p>
+      <div class="buttons">
+        <button class="btn btn-on" onclick="sendCommand('MOTION_ON')">ON</button>
+        <button class="btn btn-off" onclick="sendCommand('MOTION_OFF')">OFF</button>
+      </div>
+
+      <div class="threshold-container">
+        <label>Threshold:</label>
+        <input type="number" id="motion-threshold" min="1" max="100" value="30" />
+        <div class="threshold-buttons">
+          <button class="btn btn-set" onclick="sendThreshold('motion')">Set</button>
+          <button class="btn btn-reset" onclick="resetThreshold('motion')">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Push Button -->
+    <div class="item">
+      <img src="../../assets/images/push.png" alt="Push Button" />
+      <p>Push Button</p>
+      <div class="buttons">
+        <button class="btn btn-on" onclick="sendCommand('BUTTON_ON')">ON</button>
+        <button class="btn btn-off" onclick="sendCommand('BUTTON_OFF')">OFF</button>
+      </div>
+    </div>
+
+    <!-- Lion -->
+    <div class="item">
+      <img src="../../assets/images/lion.png" alt="Lion Mascot" class="lion" id="lion" />
+    </div>
+  </div>
+
+  <!-- Next Button -->
+  <button class="next-btn" onclick="goNext()">NEXT EXPERIMENT 🦁</button>
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../../assets/voice/VOICE OVER PAGE 15.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+
+    // Try autoplay
+    audio.play().then(() => (lion.src = "../../assets/images/lion.gif")).catch(() => {
+      document.body.addEventListener("click", () => {
+        audio.play();
+        lion.src = "../../assets/images/lion.gif";
+      }, { once: true });
+    });
+
+    // Reset lion after audio ends
+    audio.addEventListener("ended", () => {
+      lion.src = "../../assets/images/lion.png";
+    });
+
+    // Navigation
+    function goNext() { window.location.href = "./C5E6.html"; }
+    function goHome() { window.location.href = "../welcome.html"; }
+    function goAchievements() { window.location.href = "page4.html"; }
+    function goBack() { window.history.back(); }
+
+    // Serial Communication
+    function sendCommand(command) {
+      window.serialAPI?.send(command);
+      console.log("Sent:", command);
+    }
+
+    function sendThreshold(sensorType) {
+      const threshold = document.getElementById(`${sensorType}-threshold`).value;
+      window.serialAPI?.send(`SET_THRESHOLD_${sensorType.toUpperCase()}:${threshold}`);
+      alert(`Threshold for ${sensorType} set to ${threshold}`);
+    }
+
+    function resetThreshold(sensorType) {
+      document.getElementById(`${sensorType}-threshold`).value = 30;
+      window.serialAPI?.send(`RESET_THRESHOLD_${sensorType.toUpperCase()}`);
+      alert(`Threshold for ${sensorType} reset to default (30)`);
+    }
+  </script>
+
+  <script src="../serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

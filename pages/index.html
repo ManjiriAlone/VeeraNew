@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEERA KIT</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #d8ebc7, #ffffff, #d6defc);
+      font-family: Arial, sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .clip-art {
+      position: absolute;
+      width: 200px;
+      opacity: 0.7;
+    }
+    .clip-art.top { top: 10px; left: 10px; }
+    .clip-art.bottom { bottom: 10px; right: 10px; }
+    .content h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      font-weight: bold;
+      gap: 10px;
+      text-align: center;
+    }
+    .mascot { 
+          width: 30%;   /* fixed width */
+  /* fixed height */
+    object-fit: contain; /* keeps aspect ratio without distortion */
+    margin-bottom: 20px;
+    }
+    .blue { color: #3a86ff; }
+    .green { color: #76b041; }
+    .orange { color: #f15a24; }
+    @media (max-width: 768px) {
+      .content h1 { font-size: 2rem; flex-wrap: wrap; }
+      .mascot { height: 150px; }
+      .clip-art { width: 120px; }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- <img src="/assets/images/clip-top.png" alt="top clip art" class="clip-art top"> -->
+  <img src="../assets/images/clip-top.png" alt="top clip art" class="clip-art top">
+  <div class="content">
+    <h1>
+      <span class="blue">VE</span>
+      <span class="green">ER</span>
+      <span class="orange">A</span>
+      <!-- <img src="/assets/images/lion.png" alt="lion mascot" class="mascot" id="lion"> -->
+      <img src="../assets/images/lion.png" alt="lion mascot" class="mascot" id="lion">
+      <span class="blue">K</span>
+      <span class="green">I</span>
+      <span class="orange">T</span>
+    </h1>
+  </div>
+  <!-- <img src="/assets/images/clip-bottom.png" alt="bottom clip art" class="clip-art bottom"> -->
+  <img src="../assets/images/clip-bottom.png" alt="bottom clip art" class="clip-art bottom">
+
+  <audio id="voice" autoplay>
+    <!-- <source src="/assets/voice/VOICE OVER PAGE 1.mp3" type="audio/mpeg"> -->
+    <source src="../assets/voice/VOICE OVER PAGE 1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+
+    // Autoplay with fallback
+    audio.play().then(() => {
+      lion.src="../assets/images/lion.gif";
+    }).catch(() => {
+      console.log("Autoplay blocked, waiting for user interaction...");
+      document.body.addEventListener("click", () => { audio.play(); }, { once: true });
+    });
+
+    audio.addEventListener("play", () => { lion.src="../assets/images/lion.gif"; });
+    audio.addEventListener("ended", () => { lion.src="../assets/images/lion.png"; });
+
+    // Jump to Page 2 after 5 seconds
+    setTimeout(() => {
+      window.location.href = "welcome.html";
+    }, 5000);
+  </script>
+</body>
+</html>

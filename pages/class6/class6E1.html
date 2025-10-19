@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Detection - Experiment 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 20px 25px;
+            border-bottom: 2px solid #667eea;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .header-text h1 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+            animation: slideDown 0.6s ease;
+        }
+
+        .header-text p {
+            color: #aaa;
+            font-size: 0.95em;
+            letter-spacing: 0.5px;
+        }
+
+        .top-icons {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 24px;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .icon-btn:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Sensor Demo Section */
+        .sensor-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease;
+            flex-wrap: wrap;
+        }
+
+        .left-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .sensor,
+        .buzzer {
+            width: 140px;
+            height: 140px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            animation: float 3s ease-in-out infinite;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .sensor:hover,
+        .buzzer:hover {
+            transform: scale(1.08);
+        }
+
+        .buzzer {
+            animation-delay: 0.3s;
+        }
+
+        .explain-box {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+            padding: 30px;
+            text-align: center;
+            flex: 1;
+            min-width: 300px;
+            border: 2px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .explain-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .board {
+            width: 120px;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
+        }
+
+        .explain-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #0077b6;
+            line-height: 1.7;
+            min-height: 120px;
+            position: relative;
+        }
+
+        .explain-text::after {
+            content: '▌';
+            animation: blink 1s infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            0%, 49% {
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .sample-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .sample-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .sample-btn:active {
+            transform: translateY(0);
+        }
+
+        .veera {
+            width: 160px;
+            height:200px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            animation: float 3s ease-in-out infinite 0.6s;
+            object-fit: cover;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Demo Section */
+        .demo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .demo-section h2 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .visual-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        /* Sensor Animation */
+        .sensor-animation {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 3px solid #667eea;
+        }
+
+        .sensor-device {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            animation: devicePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes devicePulse {
+            0%, 100% {
+                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(102, 126, 234, 0.7);
+            }
+        }
+
+        .ir-wave {
+            position: absolute;
+            left: 50px;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 165, 0, 0.6);
+            border-radius: 50%;
+            transform: translate(40px, -50%);
+            opacity: 0;
+            animation: waveExpand 2s ease-out infinite;
+            will-change: transform, opacity;
+        }
+
+        .ir-wave:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .ir-wave:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        .ir-wave:nth-child(4) {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes waveExpand {
+            0% {
+                width: 50px;
+                height: 50px;
+                opacity: 1;
+            }
+            100% {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
+        }
+
+        .detected-object-demo {
+            position: absolute;
+            right: 100px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 100px;
+            background: linear-gradient(135deg, #ff6b6b, #ff5252);
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            animation: objectBounce 2s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @keyframes objectBounce {
+            0%, 100% {
+                transform: translateY(-50%) translateX(0);
+            }
+            50% {
+                transform: translateY(-50%) translateX(-20px);
+            }
+        }
+
+        .distance-line {
+            position: absolute;
+            left: 130px;
+            top: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            animation: measureDistance 2s ease-in-out infinite;
+            will-change: width;
+        }
+
+        @keyframes measureDistance {
+            0%, 100% {
+                width: 0;
+            }
+            50% {
+                width: calc(100% - 330px);
+            }
+        }
+
+        .distance-label {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 18px;
+            animation: labelPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes labelPulse {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Radar */
+        .radar-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: #0a1628;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.5);
+            border: 3px solid #667eea;
+        }
+
+        .radar-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #0f2744 0%, #0a1628 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-grid {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            border-radius: 50%;
+        }
+
+        .radar-circle {
+            position: absolute;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .radar-circle:nth-child(1) {
+            width: 25%;
+            height: 25%;
+        }
+
+        .radar-circle:nth-child(2) {
+            width: 50%;
+            height: 50%;
+        }
+
+        .radar-circle:nth-child(3) {
+            width: 75%;
+            height: 75%;
+        }
+
+        .radar-circle:nth-child(4) {
+            width: 100%;
+            height: 100%;
+            border-width: 2px;
+            border-color: rgba(102, 126, 234, 0.6);
+        }
+
+        .radar-line {
+            position: absolute;
+            width: 2px;
+            height: 50%;
+            background: rgba(102, 126, 234, 0.3);
+            top: 50%;
+            left: 50%;
+            transform-origin: top center;
+        }
+
+        .radar-line:nth-child(5) {
+            transform: translate(-50%, -100%) rotate(0deg);
+        }
+
+        .radar-line:nth-child(6) {
+            transform: translate(-50%, -100%) rotate(45deg);
+        }
+
+        .radar-line:nth-child(7) {
+            transform: translate(-50%, -100%) rotate(90deg);
+        }
+
+        .radar-line:nth-child(8) {
+            transform: translate(-50%, -100%) rotate(135deg);
+        }
+
+        .radar-sweep {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(from 0deg,
+                    transparent 0%,
+                    rgba(102, 126, 234, 0.1) 10%,
+                    rgba(102, 126, 234, 0.3) 20%,
+                    transparent 30%);
+            border-radius: 50%;
+            animation: radarSweep 3s linear infinite;
+            will-change: transform;
+        }
+
+        @keyframes radarSweep {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .radar-center {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #667eea;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px #667eea, 0 0 40px rgba(102, 126, 234, 0.5);
+            z-index: 10;
+            animation: centerPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes centerPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px #667eea, 0 0 40px rgba(102, 126, 234, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 30px #667eea, 0 0 60px rgba(102, 126, 234, 0.8);
+            }
+        }
+
+        .auto-detected-object {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00ff00;
+            animation: autoDetect 4s ease-in-out infinite;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        .auto-detected-object:nth-child(10) {
+            animation-delay: 0s;
+        }
+
+        .auto-detected-object:nth-child(11) {
+            animation-delay: 1s;
+        }
+
+        .auto-detected-object:nth-child(12) {
+            animation-delay: 2s;
+        }
+
+        @keyframes autoDetect {
+            0%, 100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0);
+            }
+            10%, 90% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3);
+                box-shadow: 0 0 30px #00ff00, 0 0 40px #00ff00;
+            }
+        }
+
+        .distance-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            border: 2px solid rgba(102, 126, 234, 0.5);
+        }
+
+        .status-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 0, 0.9);
+            color: #0a1628;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid rgba(0, 255, 0, 0.5);
+            animation: statusPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% {
+                background: rgba(0, 255, 0, 0.9);
+            }
+            50% {
+                background: rgba(0, 255, 0, 1);
+            }
+        }
+
+
+      
+        .learn-more-link {
+            display: inline-block;
+            text-align: center;
+            margin-top: 40px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            cursor: pointer;
+        }
+
+        .learn-more-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        @media (max-width: 1024px) {
+            .visual-demo {
+                grid-template-columns: 1fr;
+            }
+
+            .sensor-demo {
+                flex-direction: column;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-text h1 {
+                font-size: 1.5em;
+            }
+
+            .demo-section h2,
+            .how-it-works h2,
+            .fun-facts h2 {
+                font-size: 1.5em;
+            }
+
+            .sensor-demo {
+                padding: 30px 20px;
+            }
+
+            .explain-box {
+                min-width: 250px;
+                padding: 25px;
+            }
+
+            .sensor, .buzzer, .veera {
+                width: 120px;
+                height: 120px;
+            }
+
+            .top-icons {
+                right: 15px;
+                gap: 10px;
+            }
+
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+
+            .facts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Performance: Reduce animations on reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .hidden-link {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-text">
+            <h1> Object Detection Experiment</h1>
+            <p>Class 6 - Experiment 1: Understanding IR Sensors</p>
+        </div>
+
+        <div class="top-icons">
+    <a href="../page4.html">
+        <button class="icon-btn" title="Home">🏠</button>
+    </a>
+    <a href="../page4.html">
+        <button class="icon-btn" title="Achievements">🏆</button>
+    </a>
+    <a href="../welcome.html">
+        <button class="icon-btn" title="Back">↩️</button>
+    </a>
+</div>
+
+    </div>
+
+    <div class="container">
+        <!-- Sensor Demo Section -->
+        <div class="sensor-demo">
+            <div class="left-side">
+                <img src="/app_src/assets/images/IR_SENSOR.jpeg" alt="IR Sensor" class="sensor" onerror="this.style.display='none'">
+                <!-- <div style="width: 140px; height: 140px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 60px;" class="sensor">📡</div> -->
+                
+                <img src="/app_src/assets/images/buzzer.png" alt="Buzzer" class="buzzer" onerror="this.style.display='none'">
+                <!-- <div style="width: 140px; height: 140px; background: linear-gradient(135deg, #ff6b6b, #ff5252); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 60px;" class="buzzer">🔊</div> -->
+            </div>
+
+            <div class="explain-box">
+                <img src="/app_src/assets/images/board.png" alt="board" class="board" onerror="this.style.display='none'">
+                <!-- <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #0077b6, #0096c7); border-radius: 12px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 50px;" class="board"></div> -->
+                
+                <p class="explain-text" id="typed-text"></p>
+                <button class="sample-btn">Learn More</button>
+            </div>
+
+            <img src="/app_src/assets/images/lion.gif" alt="lion" class="veera" style="height: 350px;" onerror="this.style.display='none'">
+            <!-- <div style="width: 160px; height: 160px; background: linear-gradient(135deg, #ffd93d, #ff9a00); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 80px; animation: float 3s ease-in-out infinite 0.6s;" class="veera"></div> -->
+        </div>
+
+        <!-- How It Works Animation -->
+        <div class="demo-section">
+            <h2>🎯 How Object Detection Works</h2>
+
+            <div class="visual-demo">
+                <div class="sensor-animation">
+                    <div class="sensor-device">📡</div>
+                    <div class="ir-wave"></div>
+                    <div class="ir-wave"></div>
+                    <div class="ir-wave"></div>
+                    <div class="ir-wave"></div>
+                    <div class="distance-line"></div>
+                    <div class="distance-label">60 cm</div>
+                    <div class="detected-object-demo"></div>
+                </div>
+
+                <div class="radar-container">
+                    <div class="radar-screen">
+                        <div class="radar-grid">
+                            <div class="radar-circle"></div>
+                            <div class="radar-circle"></div>
+                            <div class="radar-circle"></div>
+                            <div class="radar-circle"></div>
+                            <div class="radar-line"></div>
+                            <div class="radar-line"></div>
+                            <div class="radar-line"></div>
+                            <div class="radar-line"></div>
+                        </div>
+
+                        <div class="radar-sweep"></div>
+                        <div class="radar-center"></div>
+
+                        <div class="auto-detected-object" style="left: 65%; top: 35%;"></div>
+                        <div class="auto-detected-object" style="left: 45%; top: 55%;"></div>
+                        <div class="auto-detected-object" style="left: 70%; top: 60%;"></div>
+
+                        <div class="distance-display">Distance: 60 cm</div>
+                        <div class="status-display">DETECTED ✓</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="visual-demo-text">
+                <strong>Watch the animation!</strong> The sensor sends invisible infrared waves 📡 that bounce back when they hit an object 📦
+            </p>
+        </div>
+
+  
+        <!-- Learn More Link -->
+        <div style="text-align: center; margin-top: 50px; margin-bottom: 40px;">
+            <a href="./class6E1P1.html" class="learn-more-link">Continue to Experiment 1 - Part 2 →</a>
+        </div>
+        
+    </div>
+
+
+    <script>
+        // Optimized typing effect
+        const lines = [
+            "The IR sensor detects an object nearby,",
+            "sends a signal to the board instantly.",
+            "The board tells the buzzer to beep loud,",
+            "and Veera learns — 'Something's around!'",
+            "Sensors and sound help Veera stay alert!"
+        ];
+
+        const textElement = document.getElementById("typed-text");
+        let lineIndex = 0;
+        let charIndex = 0;
+        let typingSpeed = 50;
+        let isTyping = true;
+
+        function typeLine() {
+            if (lineIndex < lines.length) {
+                if (charIndex < lines[lineIndex].length) {
+                    textElement.textContent += lines[lineIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeLine, typingSpeed);
+                } else {
+                    charIndex = 0;
+                    lineIndex++;
+                    setTimeout(typeLine, 600);
+                }
+            } else {
+                isTyping = false;
+            }
+        }
+
+        // Start typing when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', typeLine);
+        } else {
+            typeLine();
+        }
+
+        // Add click event to sample button
+        document.querySelector('.sample-btn').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'translateY(-2px)';
+            }, 100);
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Lazy load optimization - remove unused elements for better performance
+        const removeUnusedLinks = () => {
+            const hiddenLinks = document.querySelectorAll('.hidden-link');
+            hiddenLinks.forEach(link => link.remove());
+        };
+
+        // Call after page fully loads
+        window.addEventListener('load', removeUnusedLinks);
+    </script>
+    <script src="./backend/experimentControls.js"></script>
+
+</body>
+</html>

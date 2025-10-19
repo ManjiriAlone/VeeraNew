@@ -1,0 +1,254 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Health Monitor</title>
+  <style>
+    /* ====== Your existing CSS (unchanged) ====== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1e5128 0%, #4caf50 50%, #a5d6a7 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      gap: 30px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.95);
+    }
+
+    h1 { font-size: 2rem; color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); text-align: center; }
+    .container { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border-radius: 30px; padding: 40px; max-width: 600px; width: 100%; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
+    .plant-section { text-align: center; margin-bottom: 30px; }
+    .plant-img { width: 200px; height: 200px; border-radius: 20px; object-fit: cover; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); animation: plantFloat 3s ease-in-out infinite; margin: 0 auto; display: block; }
+    @keyframes plantFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    .card { background: rgba(255, 255, 255, 0.15); border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.3); }
+    .card-title { color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .card-value { font-size: 2rem; font-weight: bold; color: white; display: flex; align-items: center; gap: 10px; }
+    .card-icon { font-size: 2rem; }
+    .temp-card { background: linear-gradient(135deg, #ff6f00 0%, #ff9800 100%); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    .health-card { background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); }
+    .health-card.good { background: linear-gradient(135deg, #81c784 0%, #a5d6a7 100%); }
+    .health-card.warning { background: linear-gradient(135deg, #fbc02d 0%, #fdd835 100%); }
+    .health-card.danger { background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%); }
+    .health-card.critical { background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%); }
+    .message { background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%); border-radius: 15px; padding: 20px; color: white; text-align: center; font-size: 1rem; font-weight: 500; margin-top: 20px; min-height: 60px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.3); animation: slideIn 0.6s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .mascot { font-size: 120px; text-align: center; margin: 20px 0; animation: wave 2s ease-in-out infinite; }
+    @keyframes wave { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+    .btn { background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%); color: #1e5128; border: none; padding: 14px 40px; border-radius: 15px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25); }
+    .btn:active { transform: translateY(-1px); }
+    .sensor-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(76, 175, 80, 0.3); padding: 8px 12px; border-radius: 20px; color: white; font-size: 0.85rem; margin-top: 15px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; animation: blink 1s ease-in-out infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @media (max-width: 600px) { h1 { font-size: 1.5rem; } .container { padding: 25px; } .plant-img { width: 150px; height: 150px; } .card-value { font-size: 1.5rem; } .mascot { font-size: 80px; } }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <div class="nav">
+    <button class="nav-btn" title="Home" onclick="navigate('home')">🏠</button>
+    <button class="nav-btn" title="Achievements" onclick="navigate('achievements')">🏆</button>
+    <button class="nav-btn" title="Back" onclick="navigate('back')">←</button>
+  </div>
+
+  <h1>🌿 Plant Health Monitor</h1>
+
+  <div class="container">
+    <!-- Plant Image -->
+    <div class="plant-section">
+      <img id="plantImg" class="plant-img" src="/app_src/assets/images/plant-removebg-preview.png" alt="Healthy Plant">
+    </div>
+
+    <!-- Temperature Card -->
+    <div class="card temp-card">
+      <div class="card-title">Temperature</div>
+      <div class="card-value">
+        <span class="card-icon">🌡</span>
+        <span id="tempValue">25</span><span style="font-size: 1.5rem; opacity: 0.9;">°C</span>
+      </div>
+    </div>
+
+    <!-- Health Status Card -->
+    <div id="healthCard" class="card health-card">
+      <div class="card-title">Plant Health</div>
+      <div class="card-value">
+        <span class="card-icon" id="healthIcon">✅</span>
+        <span id="healthText">Excellent</span>
+      </div>
+    </div>
+
+    <!-- Message -->
+    <div class="message" id="message">Perfect conditions for plant growth!</div>
+
+    <!-- Mascot -->
+    <div class="mascot" id="mascot">🦁</div>
+
+    <!-- Sensor Status -->
+    <div class="sensor-badge">
+      <div class="status-dot"></div>
+      <span>IoT Sensor Active</span>
+    </div>
+
+    <!-- Button -->
+    <button class="btn" onclick="navigate('next')">Continue →</button>
+  </div>
+
+  <audio id="voice" preload="auto"></audio>
+
+  <script>
+    const PATHS = {
+      home: 'index.html',
+      achievements: 'achievements.html',
+      next: 'C7E3.html',
+      voice: {
+        excellent: 'voice/excellent.mp3',
+        good: 'voice/good.mp3',
+        fair: 'voice/fair.mp3',
+        poor: 'voice/poor.mp3',
+        critical: 'voice/critical.mp3'
+      }
+    };
+
+    const PLANT_IMAGES = {
+      excellent: 'https://images.unsplash.com/photo-1574260495687-4eca63d96118?w=300&h=300&fit=crop',
+      good: 'https://images.unsplash.com/photo-1611632622496-c69b2d33371d?w=300&h=300&fit=crop',
+      fair: 'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=300&h=300&fit=crop',
+      poor: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=300&h=300&fit=crop',
+      critical: 'https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=300&h=300&fit=crop'
+    };
+
+    const HEALTH_RANGES = {
+      excellent: { min: 20, max: 25, icon: '✅', text: 'Excellent', message: 'Perfect conditions for plant growth!', class: 'health-card' },
+      good: { min: 18, max: 20, icon: '👍', text: 'Good', message: 'Plant is doing great! Keep monitoring.', class: 'health-card good' },
+      fair: { min: 25, max: 30, icon: '⚠', text: 'Fair', message: 'Temperature is rising. Water your plant!', class: 'health-card warning' },
+      poor: { min: 30, max: 35, icon: '😟', text: 'Poor', message: 'Urgent! Move plant to cooler place.', class: 'health-card danger' },
+      critical: { min: -Infinity, max: 18, icon: '❌', text: 'Critical', message: 'Critical! Plant needs immediate care.', class: 'health-card critical' }
+    };
+
+    const elements = {
+      tempValue: document.getElementById('tempValue'),
+      healthIcon: document.getElementById('healthIcon'),
+      healthText: document.getElementById('healthText'),
+      healthCard: document.getElementById('healthCard'),
+      message: document.getElementById('message'),
+      plantImg: document.getElementById('plantImg'),
+      mascot: document.getElementById('mascot'),
+      voice: document.getElementById('voice')
+    };
+
+    function getHealthStatus(temp) {
+      if (temp <= 18) return 'critical';
+      if (temp < 20) return 'good';
+      if (temp <= 25) return 'excellent';
+      if (temp <= 30) return 'fair';
+      return 'poor';
+    }
+
+    function updatePlantHealth(temp) {
+      const status = getHealthStatus(temp);
+      const range = HEALTH_RANGES[status];
+
+      elements.tempValue.textContent = Math.round(temp);
+      elements.tempValue.style.animation = 'none';
+      setTimeout(() => { elements.tempValue.style.animation = 'pulse 2s ease-in-out infinite'; }, 10);
+
+      elements.healthCard.className = range.class;
+      elements.healthIcon.textContent = range.icon;
+      elements.healthText.textContent = range.text;
+
+      elements.plantImg.src = PLANT_IMAGES[status];
+      typewriter(elements.message, range.message, 30);
+      playVoice(status);
+
+      console.log(`🌡 Temp: ${Math.round(temp)}°C | Status: ${status.toUpperCase()}`);
+    }
+
+    function typewriter(element, text, speed = 30) {
+      element.textContent = '';
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      type();
+    }
+
+    function playVoice(status) {
+      const voicePath = PATHS.voice[status];
+      if (!voicePath) return;
+      elements.voice.src = voicePath;
+      elements.voice.play().catch((err) => { console.log('⚠ Audio play prevented:', err); });
+    }
+
+    function navigate(action) {
+      switch(action) {
+        case 'home': window.location.href = PATHS.home; break;
+        case 'achievements': window.location.href = PATHS.achievements; break;
+        case 'back': window.history.back(); break;
+        case 'next': window.location.href = PATHS.next; break;
+      }
+    }
+
+    function simulateTemperature() {
+      const temp = 18 + Math.random() * 17;
+      updatePlantHealth(temp);
+    }
+
+    window.addEventListener('load', () => {
+      updatePlantHealth(25);
+      setInterval(simulateTemperature, 4000);
+    });
+
+    document.addEventListener('click', () => { playVoice('excellent'); }, { once: true });
+  </script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

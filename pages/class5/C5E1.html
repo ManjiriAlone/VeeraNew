@@ -1,0 +1,437 @@
+<!-- ✅ Blinking LED Experiment Page (Enhanced UI/UX with Serial Controls) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blinking LED</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #002f8a, #005eff);
+      position: relative;
+      overflow-x: hidden;
+      text-align: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .clip-top {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      width: 120px;
+      opacity: 0.8;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      width: 150px;
+      opacity: 0.8;
+    }
+
+    .top-icons {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .top-icons a img {
+      width: 45px;
+      cursor: pointer;
+      transition: transform 0.25s ease;
+      filter: drop-shadow(0 0 5px rgba(0,0,0,0.4));
+    }
+
+    .top-icons a img:hover {
+      transform: scale(1.15);
+    }
+
+    h1 {
+      margin-top: 80px;
+      background: rgba(0, 30, 100, 0.9);
+      padding: 12px 40px;
+      border-radius: 14px;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+      letter-spacing: 1px;
+      animation: fadeIn 1s ease-in-out forwards;
+    }
+
+    .board {
+      width: 70%;
+      max-width: 650px;
+      position: relative;
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeIn 1.2s ease-in-out forwards;
+      animation-delay: 0.3s;
+    }
+
+    .board img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .circle {
+      position: absolute;
+      border: 3px dashed #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    .circle-led {
+      top: 8%;
+      left: 10%;
+      width: 120px;
+      height: 60px;
+    }
+
+    .circle-pic {
+      bottom: 22%;
+      right: 15%;
+      width: 140px;
+      height: 70px;
+    }
+
+    .arrow {
+      position: absolute;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    }
+
+    .arrow-pic {
+      bottom: -35px;
+      right: -20px;
+    }
+
+    .speech {
+      background: #00c8f8;
+      color: #000;
+      padding: 15px 20px;
+      border-radius: 15px;
+      max-width: 420px;
+      margin-top: 25px;
+      position: relative;
+      text-align: left;
+      font-weight: bold;
+      min-height: 100px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      line-height: 1.5;
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      border-left: 20px solid #00c8f8;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      transform: translateY(-50%);
+    }
+
+    .speech span {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: appear 0.5s forwards;
+    }
+
+    @keyframes appear {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* --- CONTROL PANEL --- */
+    .control-panel {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 15px;
+      padding: 20px 25px;
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .control-panel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    }
+
+    .control-panel input {
+      padding: 12px 16px;
+      width: 140px;
+      font-size: 1.1rem;
+      text-align: center;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .control-panel input:focus {
+      box-shadow: 0 0 10px rgba(0,200,255,0.8);
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .control-buttons button {
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 10px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: all 0.25s ease;
+    }
+
+    .control-buttons button:hover {
+      background: #00e0ff;
+      color: #003366;
+      transform: translateY(-2px);
+    }
+
+    .control-buttons button:active {
+      transform: scale(0.97);
+    }
+
+    /* Continue button */
+    .continue {
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.2rem;
+      padding: 12px 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: all 0.25s ease;
+      margin-bottom: 40px;
+    }
+
+    .continue:hover {
+      background: #00c8f8;
+      color: #002;
+      transform: translateY(-3px);
+    }
+
+    .continue img {
+      width: 28px;
+    }
+
+    .lion {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      width: 160px;
+      height: auto;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s ease;
+      font-size: 0.95rem;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 1.6rem; }
+      .board { width: 85%; }
+      .speech { max-width: 90%; }
+      .control-panel { width: 85%; }
+      .top-icons a img { width: 38px; }
+    }
+  </style>
+</head>
+
+<body>
+  <img src="../../assets/images/clip-top.png" class="clip-top">
+  <img src="../images/clip-bottom.png" class="clip-bottom">
+
+  <div class="top-icons">
+    <a href="../welcome.html"><img src="../../assets/icons/home.png" alt="Home"></a>
+    <a href="../page4.html"><img src="../../assets/icons/achievements.png" alt="Achievements"></a>
+    <a href="javascript:history.back()"><img src="../../assets/icons/logout.png" alt="Back"></a>
+  </div>
+
+  <h1>Blinking LED</h1>
+
+  <div class="board">
+    <img src="../../assets/images/board.png" alt="Experiment Board">
+    <div class="circle circle-led"></div>
+    <div class="circle circle-pic"></div>
+    <div class="arrow arrow-pic">PIC</div>
+  </div>
+
+  <div class="speech" id="speech"></div>
+
+  
+
+  <button class="continue" onclick="goNext()">
+    CONTINUE <img src="../icons/arrow.png" alt="Arrow">
+  </button>
+
+  <img src="../../assets/images/lion.png" class="lion" id="lion">
+
+  <audio id="voice" autoplay>
+    <source src="../../assets/voice/VOICE OVER PAGE 6.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+    const speechEl = document.getElementById("speech");
+    const toast = document.getElementById("toast");
+
+    const text = `Look! This is PIC. Little <NAME><br>
+    He's a tiny sleepy brain.<br>
+    This is Lumi. She's a dancing light.<br>
+    PIC whispers: "Wake up!"<br>
+    Lumi says: "ON!" (Light on! Big eyes!)`;
+
+    function animateText(text) {
+      const parts = text.split(/(<br>)/g);
+      let delay = 0;
+      parts.forEach(part => {
+        if (part === "<br>") {
+          speechEl.innerHTML += "<br>";
+        } else {
+          const span = document.createElement("span");
+          span.innerHTML = part;
+          span.style.animationDelay = delay + "s";
+          speechEl.appendChild(span);
+          delay += 0.3 * part.length / 5;
+        }
+      });
+    }
+    animateText(text);
+
+    audio.addEventListener("play", () => {
+      lion.src = "../../assets/images/lion.gif";
+    });
+
+    function goNext() {
+      window.location.href = "C5E1P1.html";
+    }
+
+    // Toast Notification
+    function showToast(msg, type = "info") {
+      toast.textContent = msg;
+      toast.style.background = type === "error" ? "rgba(255,50,50,0.9)" : "rgba(0,0,0,0.85)";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    // Serial Communication
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send("SET_EXPERIMENT_1");
+      }
+
+      if (window.serialAPI && window.serialAPI.onData) {
+        window.serialAPI.onData((data) => {
+          if (data.type === "navigate" && data.target) {
+            window.location.href = data.target;
+          }
+        });
+      }
+    });
+
+    // Button Handlers
+    function sendValue() {
+      const val = document.getElementById("ledValue").value;
+      if (!val) {
+        showToast("Please enter a value first!", "error");
+        return;
+      }
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send(`LED_VALUE:${val}`);
+        showToast(`✅ Sent value: ${val}`);
+      } else {
+        showToast("⚠️ Serial not connected", "error");
+      }
+    }
+
+    function resetValue() {
+      document.getElementById("ledValue").value = "";
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send("LED_RESET");
+        showToast("🔄 LED Reset Sent");
+      } else {
+        showToast("⚠️ Serial not connected", "error");
+      }
+    }
+  </script>
+
+  <script src="serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

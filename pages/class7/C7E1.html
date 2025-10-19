@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class 7 Exp1 - IR Sensor & LED Matrix</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e26c17 0%, #dcedc8 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      overflow-x: hidden;
+      padding: clamp(15px, 4vw, 30px);
+    }
+
+    /* Clip arts - Hidden on very small screens */
+    .clip-top, .clip-bottom {
+      position: absolute;
+      opacity: 0.85;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    .clip-top {
+      top: clamp(30px, 5vh, 70px);
+      left: clamp(10px, 3vw, 20px);
+      width: clamp(80px, 12vw, 140px);
+    }
+
+    .clip-bottom {
+      bottom: clamp(10px, 2vh, 20px);
+      right: clamp(10px, 3vw, 20px);
+      width: clamp(90px, 14vw, 150px);
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: clamp(8px, 2vw, 12px);
+      z-index: 20;
+    }
+
+    .top-nav img {
+      width: clamp(36px, 8vw, 42px);
+      height: clamp(36px, 8vw, 42px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+      border-radius: 50%;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .top-nav img:hover {
+      transform: scale(1.12);
+      background: rgba(255, 255, 255, 0.35);
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.25));
+    }
+
+    .top-nav img:active {
+      transform: scale(0.98);
+    }
+
+    /* Title */
+    h1 {
+      margin-top: clamp(80px, 12vh, 100px);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+      padding: clamp(12px, 3vw, 15px) clamp(25px, 5vw, 40px);
+      border-radius: 15px;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    h1:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+      transform: scale(1.02);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Content section */
+    .content {
+      margin-top: clamp(30px, 5vh, 40px);
+      display: flex;
+      align-items: center;
+      gap: clamp(15px, 3vw, 30px);
+      flex-wrap: wrap;
+      justify-content: center;
+      z-index: 10;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .board {
+      width: clamp(250px, 50vw, 420px);
+      max-width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+      aspect-ratio: 1;
+      object-fit: contain;
+    }
+
+    .board:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    /* IR Sensor Style */
+    .ir-sensor {
+      width: clamp(80px, 15vw, 120px);
+      max-width: 100%;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+      transition: all 0.3s ease;
+    }
+
+    .ir-sensor:hover {
+      transform: scale(1.05) rotate(-5deg);
+    }
+
+    .content-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(15px, 3vw, 20px);
+    }
+
+    .speech {
+      background: linear-gradient(135deg, #00cfff 0%, #0099cc 100%);
+      color: #fff;
+      padding: clamp(15px, 3vw, 25px);
+      border-radius: 20px;
+      font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+      max-width: 400px;
+      width: 100%;
+      position: relative;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 500;
+      box-shadow: 0 6px 20px rgba(0, 153, 204, 0.3);
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .speech:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 153, 204, 0.4);
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 12px;
+      border-style: solid;
+      border-color: transparent #0099cc transparent transparent;
+    }
+
+    .lion {
+      width: clamp(150px, 30vw, 240px);
+      height: clamp(150px, 30vw, 240px);
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+      transition: all 0.3s ease;
+    }
+
+    .lion:hover {
+      transform: scale(1.05);
+      filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.2));
+    }
+
+    /* LED Matrix Container */
+    .led-matrix-container {
+      padding: clamp(15px, 3vw, 20px);
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .led-matrix-container:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    #led-matrix {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: clamp(5px, 1.5vw, 7px);
+      min-width: 150px;
+    }
+
+    .led {
+      width: clamp(20px, 4vw, 25px);
+      height: clamp(20px, 4vw, 25px);
+      border-radius: 50%;
+      background-color: #3d3d3d;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .led.on {
+      background-color: #f72c25;
+      box-shadow: 0 0 8px #f72c25, 0 0 15px #f72c25, inset 0 2px 2px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Continue Button */
+    .continue-btn {
+      margin-top: clamp(20px, 4vh, 25px);
+      background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+      color: #333;
+      font-weight: bold;
+      font-size: clamp(0.95rem, 2vw, 1.2rem);
+      padding: clamp(12px, 2vw, 16px) clamp(30px, 5vw, 45px);
+      border-radius: 15px;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    }
+
+    .continue-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .continue-btn img {
+      width: clamp(20px, 3vw, 28px);
+      transition: all 0.3s ease;
+    }
+
+    .continue-btn:hover img {
+      transform: translateX(5px);
+    }
+
+    /* Responsive: Small screens */
+    @media (max-width: 768px) {
+      .content {
+        flex-direction: column;
+      }
+
+      .speech::after {
+        display: none;
+      }
+
+      .top-nav {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+      }
+
+      .board {
+        width: 80vw;
+        max-width: 300px;
+      }
+
+      .ir-sensor {
+        width: 60px;
+      }
+
+      #led-matrix {
+        min-width: 120px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        margin-top: 60px;
+        font-size: 1.2rem;
+      }
+
+      .board {
+        width: 90vw;
+        max-width: 250px;
+      }
+
+      .content {
+        margin-top: 20px;
+        gap: 10px;
+      }
+
+      .speech {
+        font-size: 0.9rem;
+        min-height: 80px;
+        padding: 12px;
+      }
+
+      .lion {
+        width: 120px;
+        height: 120px;
+      }
+
+      .continue-btn {
+        font-size: 1rem;
+        padding: 10px 25px;
+      }
+    }
+
+    /* Accessibility */
+    .top-nav img:focus {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    .continue-btn:focus {
+      outline: 2px solid #333;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <img src="/app_src/assets/images/clip-top.png" alt="Decorative top clip art" class="clip-top">
+
+  <div class="top-nav">
+    <img src="/app_src/assets/icons/home.png" alt="Home" onclick="goHome()" title="Home" role="button">
+    <img src="/app_src/assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()" title="Achievements" role="button">
+    <img src="/app_src/assets/icons/logout.png" alt="Go back" onclick="goBack()" title="Back" role="button">
+  </div>
+
+  <h1 id="main-title" role="heading" aria-level="1"></h1>
+
+  <div class="content">
+    <img src="/app_src/assets/images/board.png" alt="Circuit board" class="board">
+    <img src="/app_src/assets/images/IR_SENSOR.jpeg" alt="Infrared sensor device" class="ir-sensor">
+
+    <div class="led-matrix-container" role="region" aria-label="LED matrix display showing binary values">
+      <div id="led-matrix" role="img" aria-label="8 LED indicator lights"></div>
+    </div>
+
+    <div class="content-right">
+      <img src="/app_src/assets/images/lion.gif" alt="Animated lion mascot" class="lion" id="lion">
+      <div class="speech" id="speech" role="region" aria-live="polite" aria-label="Instruction message"></div>
+    </div>
+  </div>
+
+  <button class="continue-btn" onclick="navigateToNext()">
+    CONTINUE <img src="/app_src/assets/icons/arrow.png" alt="">
+  </button>
+
+  <img src="/app_src/assets/images/clip-bottom.png" alt="Decorative bottom clip art" class="clip-bottom">
+
+  <audio id="voice" preload="auto">
+    <source src="" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+
+    // Enhanced audio playback handling
+    function playAudio() {
+      if (!audio.src) return;
+      
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            lion.src = "/app_src/assets/images/lion.gif";
+          })
+          .catch(error => {
+            console.log("Autoplay prevented:", error);
+          });
+      }
+    }
+
+    // Try autoplay on load
+    window.addEventListener("load", playAudio);
+
+    // Fallback: Play on first user interaction
+    document.addEventListener("click", playAudio, { once: true });
+
+    // Reset to PNG when audio ends
+    audio.addEventListener("ended", () => {
+      lion.src = "/app_src/assets/images/lion.png";
+    });
+
+    // Navigation functions
+    function goHome() {
+      window.location.href = "welcome.html";
+    }
+
+    function goAchievements() {
+      window.location.href = "page4.html";
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+
+    function navigateToNext() {
+      window.location.href = "C7E2.html";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // --- LED Matrix Logic ---
+      const matrixContainer = document.getElementById("led-matrix");
+      const totalLeds = 8;
+
+      function createLedMatrix() {
+        if (!matrixContainer) return;
+        matrixContainer.innerHTML = '';
+        for (let i = 0; i < totalLeds; i++) {
+          const led = document.createElement("div");
+          led.classList.add("led");
+          led.dataset.index = i;
+          led.setAttribute("role", "img");
+          led.setAttribute("aria-label", `LED ${i + 1}`);
+          matrixContainer.appendChild(led);
+        }
+      }
+
+      function displayNumberOnMatrix(number) {
+        const numToDisplay = Math.max(0, Math.min(parseInt(number) || 0, 255));
+        const binaryString = numToDisplay.toString(2).padStart(8, '0');
+        const allLeds = document.querySelectorAll(".led");
+
+        allLeds.forEach((led, index) => {
+          if (binaryString[index] === '1') {
+            led.classList.add("on");
+            led.setAttribute("aria-label", `LED ${index + 1} ON`);
+          } else {
+            led.classList.remove("on");
+            led.setAttribute("aria-label", `LED ${index + 1} OFF`);
+          }
+        });
+      }
+
+      // Initialize matrix and set initial state
+      createLedMatrix();
+      displayNumberOnMatrix(2);
+
+      // Serial API handling
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send("Ready for sensor data");
+      }
+
+      if (window.serialAPI && window.serialAPI.onData) {
+        window.serialAPI.onData((data) => {
+          if (data.type === "navigate" && data.target) {
+            console.log("🔀 Navigating to:", data.target);
+            window.location.href = data.target;
+          }
+
+          if (data.type === "sensor" && typeof data.distance === 'number') {
+            console.log(`📡 Real number received: ${data.distance}`);
+            displayNumberOnMatrix(data.distance);
+          }
+        });
+      }
+
+      // --- Typewriter Effect ---
+      const mainTitleElement = document.getElementById("main-title");
+      const speechElement = document.getElementById("speech");
+      const titleText = "Infrared Sensor & LED Matrix";
+      const speechText = "Watch how the LED matrix lights up based on the distance detected by the infrared sensor!";
+
+      function typewriter(element, text, speed = 50) {
+        if (!element) return;
+        element.innerHTML = "";
+        let i = 0;
+
+        function type() {
+          if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+          }
+        }
+        type();
+      }
+
+      // Start typewriter animations
+      typewriter(mainTitleElement, titleText, 60);
+      setTimeout(() => typewriter(speechElement, speechText, 40), 1000);
+    });
+  </script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

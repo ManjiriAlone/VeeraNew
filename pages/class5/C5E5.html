@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Lighting System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to bottom, #e26c17, #dcedc8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    /* Clip arts */
+    .clip-top {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      width: 140px;
+      opacity: 0.9;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 150px;
+      opacity: 0.9;
+    }
+
+    /* Top-right menu */
+    .top-icons {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .top-icons img {
+      width: 55px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .top-icons img:hover {
+      transform: scale(1.1);
+    }
+
+    /* Title */
+    h1 {
+      margin-top: 60px;
+      background: rgba(255,255,255,0.3);
+      padding: 12px 35px;
+      border-radius: 12px;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    /* Content section */
+    .content {
+      margin-top: 40px;
+      display: flex;
+      align-items: flex-start;
+      gap: 40px;
+    }
+
+    .board {
+      width: 420px;
+    }
+
+    .lion {
+      width: 160px;
+      margin-top: 20px;
+    }
+
+    /* Speech bubble */
+    .speech {
+      background: #00cfff;
+      color: #000;
+      padding: 20px;
+      border-radius: 20px;
+      font-size: 1.2rem;
+      max-width: 400px;
+      position: relative;
+      min-height: 120px;
+      font-weight: bold;
+      line-height: 1.4rem;
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      bottom: 30px;
+      border-width: 12px;
+      border-style: solid;
+      border-color: transparent transparent transparent #00cfff;
+    }
+
+    /* Continue Button */
+    .continue-btn {
+      margin-top: 30px;
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      font-size: 1.3rem;
+      padding: 14px 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+    }
+
+    .continue-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .continue-btn img {
+      width: 30px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top-left clip art -->
+  <img src="../../assets/images/clip-top.png" alt="Top Clip" class="clip-top">
+
+  <!-- Top-right icons -->
+  <div class="top-icons">
+    <img src="../../assets/icons/home.png" alt="Home" onclick="goHome()">
+    <img src="../../assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()">
+    <img src="../../assets/icons/logout.png" alt="Back" onclick="goBack()">
+  </div>
+
+  <!-- Title -->
+  <h1>Home Lighting System</h1>
+
+  <!-- Content -->
+  <div class="content">
+    <img src="../../assets/images/board.png" alt="Board" class="board">
+    <div>
+      <div class="speech" id="speech"></div>
+      <img src="../../assets/images/lion.png" alt="Lion" class="lion" id="lion">
+    </div>
+  </div>
+
+  <!-- Continue button -->
+  <button class="continue-btn" onclick="window.location.href='C5E5P1.html'">
+    CONTINUE <img src="../../assets/icons/arrow.png" alt="Arrow">
+  </button>
+
+  <!-- Bottom-right clip art -->
+  <img src="../../assets/images/clip-bottom.png" alt="Bottom Clip" class="clip-bottom">
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../../assets/voice/VOICE OVER PAGE 14.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+    const speech = document.getElementById("speech");
+
+    const text = `This is our Home Lighting System.
+It uses a light sensor to know
+when it is dark and automatically
+turns ON the lights for us!`;
+
+    let i = 0;
+
+    function typeText() {
+      if (i < text.length) {
+        speech.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typeText, 50); // typing speed
+      }
+    }
+
+    // Autoplay fix + start typing + lion animation
+    audio.play().then(() => {
+      lion.src = "../../assets/images/lion.gif";
+      typeText();
+    }).catch(() => {
+      document.body.addEventListener("click", () => {
+        audio.play();
+        lion.src = "../../assets/images/lion.gif";
+        typeText();
+      }, { once: true });
+    });
+
+    // Reset lion when audio ends
+    audio.addEventListener("ended", () => {
+      lion.src = "../../assets/images/lion.png";
+    });
+
+    // ✅ Navigation functions
+    function goHome() {
+      window.location.href = "../welcome.html";
+    }
+    function goAchievements() {
+      window.location.href = "../page4.html";
+    }
+    function goBack() {
+      window.history.back();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (window.serialAPI && window.serialAPI.send) {
+          // Tell Kit: app is now on Experiment 1
+          window.serialAPI.send("SET_EXPERIMENT_5");
+        }
+
+        if (window.serialAPI && window.serialAPI.onData) {
+          // Listen for Kit commands (capital #E:…$)
+          window.serialAPI.onData((data) => {
+            if (data.type === "navigate" && data.target) {
+              console.log("🔀 Navigating to:", data.target);
+              window.location.href = data.target;
+            }
+          });
+        }
+      });
+    
+    function goNext() {
+      window.location.href = "C5E5P1.html"; 
+    }
+  </script>
+  <script src="../serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

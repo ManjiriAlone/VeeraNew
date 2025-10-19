@@ -1,0 +1,185 @@
+// renderer.js
+document.addEventListener('DOMContentLoaded', () => {
+  const api = window.veeraAPI;
+
+  // Track current class & experiment selected
+  let currentClass = null;
+  let currentExperiment = null;
+
+  // Log helper (optional)
+  function log(...args) {
+    console.log('[App]', ...args);
+  }
+
+  // ============ Kit → App Events ============
+
+  // When kit sends #C:x$
+  /*api.onKitClassChanged((data) => {
+    const classNum = Number(data.classNum || data);
+    log(`Class changed on Kit -> ${classNum}`);
+    currentClass = classNum;
+    openClassPage(classNum);
+  });*/
+  //NEW codes
+  api.onKitClassChanged((d) => {
+    const cls = Number(d.classNum ?? d);
+    if (!cls) return L('Invalid class from kit:', d);
+    L('Kit requested class', cls);
+    currentClass = cls;
+    // If mapping exists, open the class list page
+    const page = (window.pageMap && window.pageMap.classPages && window.pageMap.classPages[cls]) ?
+      window.pageMap.classPages[cls] : `class${cls}list.html`;
+    L('Loading page:', page);
+    window.location.href = page;
+  });
+
+  // When kit sends #E:x$
+  /*api.onKitExperimentChanged((data) => {
+    const expNum = Number(data.expNum || data);
+    log(`Experiment changed on Kit -> ${expNum}`);
+    currentExperiment = expNum;
+    if (currentClass) {
+      openExperimentPage(currentClass, expNum);
+    } else {
+      console.warn("Received experiment change before class selected!");
+    }
+  });*/
+  //NEW Codes
+  api.onKitExperimentChanged((d) => {
+    const exp = Number(d.expNum ?? d);
+    if (!exp) return L('Invalid experiment from kit:', d);
+    L('Kit requested experiment', exp, 'for currentClass', currentClass);
+    currentExp = exp;
+    if (!currentClass) {
+      L('No current class — ignoring experiment');
+      return;
+    }
+    // Use pageMap if present, otherwise use default naming
+    const page = (window.pageMap && window.pageMap.experimentPages && window.pageMap.experimentPages[currentClass] && window.pageMap.experimentPages[currentClass][exp]) ?
+      window.pageMap.experimentPages[currentClass][exp] : `C${currentClass}E${exp}.html`;
+    L('Loading experiment page:', page);
+    window.location.href = page;
+  });
+
+  // ============ App → Kit Events ============
+
+  // When user selects a class in app menu
+  /*window.selectClass = async function (classNum) {
+    log(`User selected class ${classNum}`);
+    currentClass = classNum;
+    await api.sendClass(classNum);
+    openClassPage(classNum);
+  };*/
+  //NEW codes
+  // Expose functions so existing button onclicks can call them, e.g., onclick="selectClass(5)"
+  window.selectClass = async function (cls) {
+    currentClass = cls;
+    L('User selected class', cls, '— sending to kit');
+    try {
+      const res = await api.sendClass(cls);
+      L('sendClass result:', res);
+    } catch (e) {
+      L('sendClass error', e);
+    }
+    // navigate UI
+    const page = (window.pageMap && window.pageMap.classPages && window.pageMap.classPages[cls]) ?
+      window.pageMap.classPages[cls] : `class${cls}list.html`;
+    window.location.href = page;
+  };
+
+  // When user selects an experiment in app
+  /*window.selectExperiment = async function (expNum) {
+    log(`User selected experiment ${expNum}`);
+    currentExperiment = expNum;
+    await api.sendExperiment(expNum);
+    openExperimentPage(currentClass, expNum);
+  };*/
+  //NEW codes
+  window.selectExperiment = async function (exp) {
+    if (!currentClass) L('No current class when selecting experiment; defaulting to first class');
+    currentExp = exp;
+    L('User selected experiment', exp, 'for class', currentClass);
+    try {
+      const res = await api.sendExperiment(exp);
+      L('sendExperiment result:', res);
+    } catch (e) {
+      L('sendExperiment error', e);
+    }
+    // navigate UI
+    const page = (window.pageMap && window.pageMap.experimentPages && window.pageMap.experimentPages[currentClass] && window.pageMap.experimentPages[currentClass][exp]) ?
+      window.pageMap.experimentPages[currentClass][exp] : `C${currentClass}E${exp}.html`;
+    window.location.href = page;
+  };
+
+  // ============ Navigation Functions ============
+
+  // Navigate to class page
+  /*function openClassPage(classNum) {
+    const page = `class${classNum}list.html`;
+    log(`Opening ${page}`);
+    window.location.href = page;
+  }
+
+  // Navigate to experiment page
+  function openExperimentPage(classNum, expNum) {
+    const page = `C${classNum}E${expNum}.html`;
+    log(`Opening ${page}`);
+    window.location.href = page;
+  }*/
+
+  // ============ Threshold Auto-sending ============
+
+  // When a specific experiment HTML loads, automatically send thresholds
+  /*const path = window.location.pathname;
+  const filename = path.substring(path.lastIndexOf('/') + 1);
+  const match = filename.match(/^C(\d+)E(\d+)\.html$/);
+  if (match) {
+    const [_, cls, exp] = match;
+    const key1 = `C${cls}_E${exp}`;  // try underscore form
+    const key2 = `C${cls}E${exp}`;   // try compact form
+
+    // Try sending using whichever key exists
+    api.sendThresholdsFor(key1).then(res => {
+      if (!res.ok) return api.sendThresholdsFor(key2);
+    }).catch(()=> api.sendThresholdsFor(key2));
+    }
+
+    log(`Detected experiment page: ${window.__experimentKey}`);
+    setTimeout(() => {
+      api.sendThresholdsFor(key)
+        .then(res => log(`Thresholds sent for ${key}`, res))
+        .catch(err => console.error(`Error sending thresholds for ${key}`, err));
+    }, 1000); // wait 1 sec after page load
+  }
+);*/
+  //NEW codes
+  // ---------- When a specific experiment HTML loads: auto-send thresholds ----------
+  // Detect page filename (e.g., C5E6.html OR C5_E6.html, we normalize to C5_E6)
+  const filename = window.location.pathname.split('/').pop();
+  const m = filename.match(/^C(\d+)[_]?E(\d+)\.html$/i);
+  if (m) {
+    const cls = m[1], exp = m[2];
+    const keyUnderscore = `C${cls}_E${exp}`; // matches thresholds.js keys like "C5_E6"
+    const keyCompact = `C${cls}E${exp}`;
+    L('Detected experiment page:', filename, 'trying keys', keyUnderscore, keyCompact);
+
+    // Try underscore form first, if fails try compact form
+    setTimeout(async () => {
+      let res = await api.sendThresholdsFor(keyUnderscore);
+      if (!res || !res.ok) {
+        L('sendThresholdsFor returned not ok for', keyUnderscore, res, 'trying', keyCompact);
+        res = await api.sendThresholdsFor(keyCompact);
+      }
+      L('Threshold send result for page', filename, res);
+    }, 900); // small delay to let the renderer finish initialization
+  }
+
+  // Expose pageMap on window for easier usage (pageMap.js must be included in HTML before this script)
+  if (window.pageMap === undefined && typeof require === 'function') {
+    try {
+      window.pageMap = require('./pageMap'); // for dev when using nodeIntegration false this may fail; optional
+    } catch (e) {
+      // ignore
+    }
+  }
+});

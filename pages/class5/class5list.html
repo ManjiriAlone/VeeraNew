@@ -1,0 +1,243 @@
+../../assets<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Experiments</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(to right, #d0d9f7, #ffffff, #fcd6d6);
+      position: relative;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    /* Clip arts */
+    .clip-top {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 180px;
+      opacity: 0.8;
+    }
+
+    .clip-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 200px;
+      opacity: 0.8;
+    }
+
+    /* Heading */
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 15px;
+      color: #000;
+    }
+
+    .class-badge {
+      display: inline-block;
+      background: #1c3cff;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 8px 25px;
+      border-radius: 12px;
+      margin: 10px auto 30px auto;
+      text-align: center;
+    }
+
+    /* Top right icons */
+    .top-icons {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .top-icons img {
+      width: 50px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .top-icons img:hover {
+      transform: scale(1.1);
+    }
+
+    /* Experiments grid */
+    .experiments {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .exp-btn {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .exp-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    .blue { background: #1c3cff; width: 100%; }
+    .green { background: #7bb241; }
+    .red { background: #f4511e; }
+
+    /* Lion image */
+    .lion {
+      position: absolute;
+      bottom: 30px;
+      right: 60px;
+      width: 10%;
+      object-fit: contain;
+    }
+
+    /* Continue button */
+    .continue-btn {
+      display: block;
+      margin: 30px auto;
+      padding: 12px 40px;
+      background: #ff9800;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .continue-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+<body>
+  <!-- Top-left clip art -->
+  <img src="../../assets/images/clip-top.png" alt="Top Clip" class="clip-top">
+
+  <!-- Top-right icons -->
+  <div class="top-icons">
+    <img src="../../assets/icons/home.png" alt="Home" onclick="goHome()">
+    <img src="../../assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()">
+    <img src="../../assets/icons/logout.png" alt="Back" onclick="goBack()">
+  </div>
+
+  <!-- Heading -->
+  <h1>Select Experiments</h1>
+  <div class="class-badge">Class 5</div>
+
+  <!-- Experiments -->
+  <div class="experiments">
+    <button class="exp-btn blue" onclick="goExperiment(1)">1.  Blinking LED</button>
+    <button class="exp-btn green" onclick="goExperiment(2)">2. Light Intensity Control </button>
+    <button class="exp-btn red" onclick="goExperiment(3)">3. Food Storage Monitoring</button>
+    <button class="exp-btn blue" onclick="goExperiment(4)">4. Water Level Alerting</button>
+    <button class="exp-btn red" onclick="goExperiment(5)">5. Home Lighting System</button>
+    <button class="exp-btn green" onclick="goExperiment(6)">6. Classroom Temperature Monitoring system</button>
+    <button class="exp-btn blue" onclick="goExperiment(7)">7. Plant Soil monitoring system</button>
+  </div>
+
+  <!-- Lion -->
+  <img src="../assets/images/lion.png" alt="Lion" class="lion" id="lion">
+
+  <!-- Bottom-right clip art -->
+  <img src="../assets/images/clip-bottom.png" alt="Bottom Clip" class="clip-bottom">
+
+  <!-- Continue button -->
+  <button class="continue-btn">Continue</button>
+
+  <!-- Audio -->
+  <audio id="voice" autoplay>
+    <source src="../assets/voice/VOICE OVER PAGE 5.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const lion = document.getElementById("lion");
+
+    // Try autoplay
+    audio.play().then(() => {
+      lion.src = "../assets/images/lion.gif"; // switch to GIF when audio plays
+    }).catch(() => {
+      console.log("Autoplay blocked, waiting for user interaction...");
+      document.body.addEventListener("click", () => {
+        audio.play();
+      }, { once: true });
+    });
+
+    // When audio starts
+    audio.addEventListener("play", () => {
+      lion.src = "../assets/images/lion.gif";
+    });
+
+    // When audio ends
+    audio.addEventListener("ended", () => {
+      lion.src = "../assets/images/lion.png";
+    });
+
+    // Continue button action
+    document.querySelector(".continue-btn").addEventListener("click", () => {
+      window.location.href = "C5E1.html"; // replace with your next page
+    });
+
+    // ✅ Navigation functions
+    function goHome() {
+      window.location.href = "../welcome.html";
+    }
+    function goAchievements() {
+      window.location.href = "../page4.html";
+    }
+    function goBack() {
+      window.history.back();
+    }
+
+    // ✅ Experiment navigation
+    function goExperiment(num) {
+      const pages = {
+        1: "C5E1.html",
+        2: "C5E2.html",
+        3: "C5E3.html",
+        4: "C5E4.html",
+        5: "C5E5.html",
+        6: "C5E6.html",
+        7: "C5E7.html",
+      };
+      if (pages[num]) {
+        window.location.href = pages[num];
+      }
+    }
+  </script>
+  <script src="serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+  <script src="./renderer/js/goExperiment.js"></script>
+</body>
+</html>

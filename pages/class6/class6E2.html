@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perishable Goods Monitoring System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated Background Particles */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    /* Top Clips */
+    .clip-top {
+      position: fixed;
+      top: 70px;
+      left: 20px;
+      width: 140px;
+      opacity: 0.9;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+      z-index: 15;
+      transition: all 0.3s ease;
+    }
+
+    .clip-top:hover {
+      transform: scale(1.05);
+    }
+
+    .clip-bottom {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 150px;
+      opacity: 0.9;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+      z-index: 15;
+      transition: all 0.3s ease;
+    }
+
+    .clip-bottom:hover {
+      transform: scale(1.05);
+    }
+
+    /* Navigation */
+    .top-nav {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 15px;
+      z-index: 100;
+    }
+
+    .top-nav img {
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      border-radius: 50%;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .top-nav img:hover {
+      transform: scale(1.2) rotate(5deg);
+      background: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .top-nav img:active {
+      transform: scale(0.95);
+    }
+
+    /* Header */
+    h1 {
+      margin-top: 80px;
+      padding: 20px 50px;
+      border-radius: 20px;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.4s ease;
+      z-index: 10;
+      position: relative;
+      letter-spacing: 1px;
+    }
+
+    h1:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Content Container */
+    .content {
+      margin-top: 50px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+      z-index: 10;
+      max-width: 1500px;
+      width: 100%;
+      position: relative;
+    }
+
+    /* Board Section */
+    .board-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .board {
+      width: 450px;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .board:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Right Content Area */
+    .content-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      flex: 1;
+      max-width: 550px;
+      min-width: 400px;
+    }
+
+    /* Food Display Container */
+    .food-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 30px;
+      border-radius: 25px;
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      transition: all 0.4s ease;
+    }
+
+    .food-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Speech Bubble */
+    .speech {
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      color: #2d3748;
+      padding: 25px 30px;
+      border-radius: 25px;
+      font-size: 1.15rem;
+      width: 100%;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      position: relative;
+      transition: all 0.4s ease;
+    }
+
+    .speech::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      bottom: 30px;
+      border-width: 15px;
+      border-style: solid;
+      border-color: transparent transparent transparent #ffffff;
+      transition: all 0.4s ease;
+      filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .speech .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1.2em;
+      background: currentColor;
+      margin-left: 4px;
+      animation: blink 0.8s infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    /* Food Image */
+    .food {
+      width: 260px;
+      height: 260px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.25));
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .food:hover {
+      transform: scale(1.15) rotate(5deg);
+      filter: drop-shadow(0 12px 30px rgba(0,0,0,0.35));
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px) rotate(-5deg); }
+      20%, 40%, 60%, 80% { transform: translateX(10px) rotate(5deg); }
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      25% { transform: translateY(-20px) scale(1.05); }
+      50% { transform: translateY(-10px) scale(1.03); }
+      75% { transform: translateY(-5px) scale(1.01); }
+    }
+
+    .shake-animation {
+      animation: shake 0.6s ease-in-out;
+    }
+
+    .bounce-animation {
+      animation: bounce 0.8s ease-in-out;
+    }
+
+    /* Temperature Display */
+    .temp-display {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%);
+      padding: 20px 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      transition: all 0.4s ease;
+      text-align: center;
+    }
+
+    .temp-display:hover {
+      transform: scale(1.08);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%);
+    }
+
+    .temp-label {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .temp-value {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 3px 3px 8px rgba(0,0,0,0.4);
+      letter-spacing: 2px;
+    }
+
+    /* Lion Section */
+    .lion-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 25px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      transition: all 0.4s ease;
+    }
+
+    .lion-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .lion-gif {
+      width: 180px;
+      height: auto;
+      border-radius: 20px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .lion-gif:hover {
+      transform: scale(1.12) rotate(3deg);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Control Panel */
+    .control-panel {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      width: 100%;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      font-weight: 700;
+      border-radius: 15px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      font-size: 1.05rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-send {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-send:hover {
+      background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(72, 187, 120, 0.5);
+    }
+
+    .btn-reset {
+      background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-reset:hover {
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(245, 101, 101, 0.5);
+    }
+
+    .continue-btn {
+      margin-top: 50px;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a202c;
+      font-weight: 800;
+      font-size: 1.3rem;
+      padding: 18px 50px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 3px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 10;
+      position: relative;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 50px rgba(251, 191, 36, 0.5);
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .continue-btn:active {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .continue-btn img {
+      width: 32px;
+      transition: all 0.4s ease;
+      filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    }
+
+    .continue-btn:hover img {
+      transform: translateX(8px);
+    }
+
+    input[type="number"] {
+      padding: 15px 25px;
+      border-radius: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      font-size: 1.1rem;
+      width: 100%;
+      max-width: 200px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      transition: all 0.3s ease;
+      font-weight: 700;
+      color: #2d3748;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.5);
+      background: #fff;
+      transform: scale(1.05);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .content {
+        gap: 40px;
+      }
+
+      .board {
+        width: 380px;
+      }
+
+      .content-right {
+        min-width: 350px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.6rem;
+        padding: 15px 30px;
+        margin-top: 70px;
+      }
+
+      .content {
+        gap: 30px;
+        margin-top: 30px;
+      }
+
+      .board {
+        width: 100%;
+        max-width: 350px;
+      }
+
+      .content-right {
+        min-width: 100%;
+      }
+
+      .food {
+        width: 200px;
+        height: 200px;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      input[type="number"] {
+        max-width: 100%;
+      }
+
+      .temp-value {
+        font-size: 2.5rem;
+      }
+
+      .clip-top, .clip-bottom {
+        width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Clip -->
+  <img src="/app_src/assets/images/clip-top.png" alt="Top Clip" class="clip-top">
+
+  <!-- Navigation -->
+  <div class="top-nav">
+    <img src="/app_src/assets/icons/home.png" alt="Home" onclick="goHome()" title="Home">
+    <img src="/app_src/assets/icons/achievements.png" alt="Achievements" onclick="goAchievements()" title="Achievements">
+    <img src="/app_src/assets/icons/logout.png" alt="Back" onclick="goBack()" title="Back">
+  </div>
+
+  <h1>PERISHABLE GOODS MONITORING SYSTEM</h1>
+
+  <div class="content">
+    <!-- Board Section -->
+    <div class="board-section">
+      <img src="/app_src/assets/images/board.png" alt="Board" class="board">
+    </div>
+
+    <!-- Right Content -->
+    <div class="content-right">
+      <!-- Food Status Display -->
+      <div class="food-container">
+        <div class="speech" id="speech">
+          <span id="speechText"></span><span class="cursor"></span>
+        </div>
+        
+        <img src="/app_src/assets/images/fresh-food.png" alt="Food" class="food" id="foodImage">
+        
+        <div class="temp-display">
+          <div class="temp-label">Current Temperature</div>
+          <div class="temp-value" id="tempDisplay">--°C</div>
+        </div>
+      </div>
+
+      <!-- Lion Guardian -->
+      <div class="lion-section">
+        <img src="/app_src/assets/images/lion.gif" alt="Lion Guardian" class="lion-gif">
+      </div>
+
+      <!-- Control Panel -->
+      <div class="control-panel">
+        <div class="btn-group">
+          <input type="number" id="thresholdInput" placeholder="Threshold °C" value="25">
+          <button class="btn btn-send" onclick="sendThreshold()">Set Threshold</button>
+          <button class="btn btn-reset" onclick="resetThreshold()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="continue-btn" onclick="goNext()">
+    CONTINUE <img src="/app_src/assets/icons/arrow.png" alt="Arrow">
+  </button>
+
+  <!-- Bottom Clip -->
+  <img src="/app_src/assets/images/clip-bottom.png" alt="Bottom Clip" class="clip-bottom">
+
+  <audio id="voice" autoplay>
+    <source src="" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("voice");
+    const foodImage = document.getElementById("foodImage");
+    const speech = document.getElementById("speech");
+    const speechText = document.getElementById("speechText");
+    const thresholdInput = document.getElementById("thresholdInput");
+    const tempDisplay = document.getElementById("tempDisplay");
+
+    let temperature = null;
+    let threshold = 25;
+    let isTyping = false;
+    let typewriterTimeout = null;
+
+    // Fun messages for kids
+    const freshMessages = [
+      "Wow! Food is super fresh and yummy! 😋✨",
+      "Great job! Temperature is perfect for keeping food safe! 🌟",
+      "Awesome! Your food is fresh and ready to eat! 🎉🍎",
+      "Perfect! The food is stored at the right temperature! 👍",
+      "Yay! Everything is fresh and healthy! 🥗💚",
+      "Cool beans! Your food is in the safe zone! ❄️✅",
+      "Fantastic! Temperature is just right! 🌈🍇",
+      "Amazing work! Food stays fresh and nutritious! 🏆🥕"
+    ];
+
+    const spoiledMessages = [
+      "Oh no! Temperature is too high! Food might spoil! 🚨",
+      "Alert! It's getting warm in here! Quick action needed! ⚠️",
+      "Danger zone! Food safety at risk! Check temperature! 🔥",
+      "Uh-oh! Temperature alert! Food could go bad! 😰",
+      "Warning! Too hot for food storage! Time to cool down! 🌡️",
+      "Yikes! Heat alert! Food freshness in danger! 🆘",
+      "Attention! Temperature spike detected! Food at risk! 📢",
+      "Emergency! Cooling needed to save the food! 🚑"
+    ];
+
+    const waitingMessages = [
+      "Connecting to temperature sensor... Please wait! ⏳",
+      "Getting ready to monitor your food storage! 🔍",
+      "Setting up the monitoring system... Almost there! 🛠️",
+      "Preparing to check temperature readings! 📡",
+      "Initializing food safety guardian mode! 🦁",
+      "Calibrating sensors for accurate readings! 🎯"
+    ];
+
+    // Typewriter effect
+    function typeWriter(text, callback) {
+      if (isTyping) {
+        clearTimeout(typewriterTimeout);
+      }
+      
+      isTyping = true;
+      speechText.textContent = '';
+      let index = 0;
+
+      function type() {
+        if (index < text.length) {
+          speechText.textContent += text.charAt(index);
+          index++;
+          typewriterTimeout = setTimeout(type, 40); // Speed of typing
+        } else {
+          isTyping = false;
+          if (callback) callback();
+        }
+      }
+      
+      type();
+    }
+
+    // Get random message
+    function getRandomMessage(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function updateFoodStatus() {
+      if (temperature === null) {
+        tempDisplay.textContent = "--°C";
+        const message = getRandomMessage(waitingMessages);
+        typeWriter(message);
+        speech.style.background = "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)";
+        speech.style.borderColor = "rgba(56,189,248,0.5)";
+        speech.style.color = "#0c4a6e";
+        return;
+      }
+
+      tempDisplay.textContent = `${temperature}°C`;
+      
+      if (temperature > threshold) {
+        foodImage.src = "../images/fresh-food.png";
+        foodImage.classList.remove('bounce-animation');
+        foodImage.classList.add('shake-animation');
+        setTimeout(() => foodImage.classList.remove('shake-animation'), 600);
+        
+        const message = getRandomMessage(spoiledMessages) + ` (${temperature}°C > ${threshold}°C)`;
+        typeWriter(message);
+        speech.style.background = "linear-gradient(135deg, #fed7d7 0%, #fc8181 100%)";
+        speech.style.borderColor = "rgba(245,101,101,0.5)";
+        speech.style.color = "#742a2a";
+      } else {
+        foodImage.src = "../images/food-img.png";
+        foodImage.classList.remove('shake-animation');
+        foodImage.classList.add('bounce-animation');
+        setTimeout(() => foodImage.classList.remove('bounce-animation'), 800);
+        
+        const message = getRandomMessage(freshMessages) + ` (${temperature}°C ≤ ${threshold}°C)`;
+        typeWriter(message);
+        speech.style.background = "linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)";
+        speech.style.borderColor = "rgba(72,187,120,0.5)";
+        speech.style.color = "#064e3b";
+      }
+    }
+
+    // Navigation
+    function goHome() { window.location.href = "../welcome.html"; }
+    function goAchievements() { window.location.href = "../page4.html"; }
+    function goBack() { window.history.back(); }
+    function goNext() { window.location.href = "class6E3.html"; }
+
+    // Threshold controls
+    function sendThreshold() {
+      const value = parseFloat(thresholdInput.value);
+      if (!isNaN(value) && value >= -50 && value <= 100) {
+        threshold = value;
+        
+        // Send to Arduino via Serial API
+        if (window.serialAPI && window.serialAPI.send) {
+          const command = `THRESHOLD:${threshold}\n`;
+          window.serialAPI.send(command);
+          console.log(`✅ Threshold sent to Arduino: ${threshold}°C`);
+          
+          typeWriter(`New threshold set to ${threshold}°C! Monitoring updated! 🎯`);
+        } else {
+          console.warn("⚠️ Serial API not available. Running in demo mode.");
+          typeWriter(`Threshold updated to ${threshold}°C in demo mode! 🖥️`);
+        }
+        
+        setTimeout(() => updateFoodStatus(), 2000);
+      } else {
+        typeWriter("Oops! Please enter a valid temperature between -50°C and 100°C! 🤔");
+      }
+    }
+
+    function resetThreshold() {
+      threshold = 25;
+      thresholdInput.value = "25";
+      
+      // Send reset command to Arduino
+      if (window.serialAPI && window.serialAPI.send) {
+        window.serialAPI.send("RESET\n");
+        console.log("🔄 Reset command sent to Arduino");
+      }
+      
+      typeWriter("Threshold reset to 25°C! Back to default settings! 🔄");
+      setTimeout(() => updateFoodStatus(), 2000);
+    }
+
+    // Parse serial data from Arduino
+    function parseSerialData(data) {
+      console.log("📥 Raw data received:", data);
+      
+      // Handle different data formats
+      if (typeof data === 'string') {
+        // Format: "TEMP:25.5" or "Temperature:25.5"
+        const tempMatch = data.match(/(?:TEMP|Temperature)[:\s]*([+-]?\d+\.?\d*)/i);
+        if (tempMatch) {
+          const temp = parseFloat(tempMatch[1]);
+          if (!isNaN(temp)) {
+            temperature = temp;
+            console.log(`🌡️ Temperature parsed: ${temperature}°C`);
+            updateFoodStatus();
+            return;
+          }
+        }
+        
+        // Try parsing as plain number
+        const numValue = parseFloat(data.trim());
+        if (!isNaN(numValue)) {
+          temperature = numValue;
+          console.log(`🌡️ Temperature (plain number): ${temperature}°C`);
+          updateFoodStatus();
+          return;
+        }
+      } else if (typeof data === 'object') {
+        // Handle JSON format: {"temperature": 25.5} or {"temp": 25.5}
+        if (data.temperature !== undefined) {
+          temperature = parseFloat(data.temperature);
+          console.log(`🌡️ Temperature (JSON): ${temperature}°C`);
+          updateFoodStatus();
+          return;
+        } else if (data.temp !== undefined) {
+          temperature = parseFloat(data.temp);
+          console.log(`🌡️ Temperature (JSON temp): ${temperature}°C`);
+          updateFoodStatus();
+          return;
+        } else if (data.value !== undefined) {
+          temperature = parseFloat(data.value);
+          console.log(`🌡️ Temperature (JSON value): ${temperature}°C`);
+          updateFoodStatus();
+          return;
+        }
+      }
+      
+      console.log("⚠️ Could not parse temperature from data:", data);
+    }
+
+    // Initialize serial connection
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("🚀 Perishable Goods Monitoring System initialized");
+      
+      // Show initial message
+      typeWriter(getRandomMessage(waitingMessages));
+      
+      // Check if Serial API is available
+      if (window.serialAPI) {
+        console.log("✅ Serial API detected!");
+        
+        // Send initialization command to Arduino
+        if (window.serialAPI.send) {
+          setTimeout(() => {
+            window.serialAPI.send("INIT:EXP8\n");
+            window.serialAPI.send(`THRESHOLD:${threshold}\n`);
+            console.log("📡 Initialization commands sent to Arduino");
+          }, 500);
+        }
+
+        // Listen for temperature data from Arduino
+        if (window.serialAPI.onData) {
+          window.serialAPI.onData((data) => {
+            parseSerialData(data);
+          });
+          console.log("👂 Listening for serial data from Arduino...");
+        }
+
+        // Handle serial connection events
+        if (window.serialAPI.onConnect) {
+          window.serialAPI.onConnect(() => {
+            console.log("🔌 Arduino connected!");
+            typeWriter("Arduino connected! Starting temperature monitoring! 🔌✨");
+          });
+        }
+
+        if (window.serialAPI.onDisconnect) {
+          window.serialAPI.onDisconnect(() => {
+            console.log("🔌 Arduino disconnected!");
+            typeWriter("Arduino disconnected! Please reconnect the device! 😕");
+            temperature = null;
+            updateFoodStatus();
+          });
+        }
+      } else {
+        console.warn("⚠️ Serial API not available. Running in demo mode.");
+        typeWriter("Running in demo mode! Connect Arduino for real-time monitoring! 🖥️");
+        
+        // Demo mode - simulate temperature changes
+        let demoTemp = 20;
+        setInterval(() => {
+          demoTemp = 15 + Math.random() * 20; // Random temp between 15-35°C
+          temperature = Math.round(demoTemp * 10) / 10;
+          updateFoodStatus();
+        }, 5000);
+      }
+    });
+  </script>
+
+  <script src="serial-handler.js"></script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>

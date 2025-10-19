@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #e0f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Header section */
+        header {
+            background-color: #00796b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+
+        header h1 {
+            text-align: center;
+            flex: 1;
+            font-size: 24px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-buttons img {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .nav-buttons img:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main section */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2dfdb 100%);
+        }
+
+        .scene {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* Animation Scene */
+        .animation-scene {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid #00796b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sensor */
+        .sensor-animated {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sensor-body {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+            border-radius: 12px;
+            position: relative;
+            border: 2px solid #00474a;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .sensor-lens {
+            width: 35px;
+            height: 35px;
+            background: radial-gradient(circle at 30% 30%, #ffeb3b, #ff9800);
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+            left: 22px;
+            animation: sensorDetect 2s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+        }
+
+        @keyframes sensorDetect {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 152, 0, 1);
+                transform: scale(1.1);
+            }
+        }
+
+        /* Detection waves from sensor */
+        .detection-wave {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 2px solid #ff9800;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: wave 1.5s ease-out infinite;
+        }
+
+        .detection-wave:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .detection-wave:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes wave {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
+        }
+
+        /* Person Moving */
+        .person {
+            position: absolute;
+            animation: personWalk 4s ease-in-out infinite;
+        }
+
+        .person-head {
+            width: 25px;
+            height: 25px;
+            background: #d4a574;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .person-head::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: black;
+            border-radius: 50%;
+            top: 8px;
+            left: 6px;
+        }
+
+        .person-head::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: black;
+            border-radius: 50%;
+            top: 8px;
+            right: 6px;
+        }
+
+        .person-body {
+            width: 20px;
+            height: 35px;
+            background: #2196f3;
+            margin: 3px auto 0;
+            border-radius: 5px;
+        }
+
+        .person-legs {
+            width: 20px;
+            height: 25px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+        }
+
+        .leg {
+            width: 8px;
+            height: 25px;
+            background: #333;
+            border-radius: 4px;
+            animation: legWalk 0.6s ease-in-out infinite;
+        }
+
+        .leg:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes legWalk {
+            0%, 100% {
+                transform: rotateX(0deg);
+            }
+            50% {
+                transform: rotateX(30deg);
+            }
+        }
+
+        @keyframes personWalk {
+            0% {
+                left: 200px;
+            }
+            50% {
+                left: 350px;
+            }
+            100% {
+                left: 200px;
+            }
+        }
+
+        /* Arduino in middle */
+        .arduino-middle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .arduino-board {
+            width: 150px;
+            height: 200px;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            border-radius: 10px;
+            position: relative;
+            border: 2px solid #0d47a1;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .led-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            animation: ledBlink 1s ease-in-out infinite;
+        }
+
+        .led-red {
+            background-color: #ef5350;
+            top: 30px;
+            right: 15px;
+            box-shadow: 0 0 10px rgba(239, 83, 80, 0.8);
+        }
+
+        .led-green {
+            background-color: #66bb6a;
+            bottom: 30px;
+            right: 15px;
+            animation-delay: 0.5s;
+            box-shadow: 0 0 10px rgba(102, 187, 106, 0.8);
+        }
+
+        @keyframes ledBlink {
+            0%, 100% {
+                opacity: 0.4;
+                box-shadow: 0 0 5px rgba(102, 187, 106, 0.4);
+            }
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 15px rgba(102, 187, 106, 1);
+            }
+        }
+
+        /* Connection lines */
+        .line-sensor-to-arduino {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #ff9800, #00796b);
+            top: 50%;
+            left: 130px;
+            width: 200px;
+            transform: translateY(-50%);
+            animation: lineFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes lineFlow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(0, 121, 107, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(255, 152, 0, 0.8);
+            }
+        }
+
+        /* Alert pulse from arduino */
+        .alert-pulse {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ff5722;
+            border-radius: 50%;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: alertPulse 1s ease-out infinite;
+        }
+
+        @keyframes alertPulse {
+            0% {
+                width: 30px;
+                height: 30px;
+                opacity: 1;
+            }
+            100% {
+                width: 70px;
+                height: 70px;
+                opacity: 0;
+            }
+        }
+
+        /* Explanation Section */
+        .explanation {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #00796b;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .explanation h3 {
+            color: #00796b;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2dfdb 100%);
+            border-radius: 10px;
+            border-left: 4px solid #00796b;
+            animation: stepPulse 2s ease-in-out infinite;
+        }
+
+        .step:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .step:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+
+        .step:nth-child(3) {
+            animation-delay: 1.4s;
+        }
+
+        @keyframes stepPulse {
+            0%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+
+        .step-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff9800;
+            margin-bottom: 8px;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: #00796b;
+            font-weight: bold;
+        }
+
+        /* Footer section */
+        footer {
+            background-color: #00796b;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        footer button {
+            background-color: #004d40;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        footer button:hover {
+            background-color: #26a69a;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 18px;
+            }
+
+            .animation-scene {
+                height: 300px;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+            }
+
+            .step {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🏃 Motion Detection System</h1>
+
+        <div class="nav-buttons">
+            <a href="#"><img src="/app_src/assets/icons/home.png" alt="Home"></a>
+            <a href="#"><img src="/app_src/assets/icons/logout.png" alt="Logout"></a>
+            <a href="#"><img src="/app_src/assets/icons/achievements.png" alt="Achievements"></a>
+        </div>
+    </header>
+
+    <main>
+        <div class="scene">
+            <!-- Animation Scene -->
+            <div class="animation-scene">
+                <!-- Sensor on left -->
+                <div class="sensor-animated">
+                    <div class="sensor-body">
+                        <!-- <div class="sensor-lens"></div>
+                        <div class="detection-wave"></div>
+                        <div class="detection-wave"></div>
+                        <div class="detection-wave"></div> -->
+                        <img src="/app_src/assets/images/motion.png" alt="sensor" style="width: 80px; height: auto; margin-top: 10px;">
+                    </div>
+                </div>
+
+                <!-- Connection line -->
+                <div class="line-sensor-to-arduino"></div>
+
+                <!-- Arduino in middle -->
+                <div class="arduino-middle">
+                    <div class="alert-pulse"></div>
+                    <div class="arduino-board">
+                        <img src="/app_src/assets/images/board.png" alt="hello" style="width: 150px; height: auto;">
+                        <!-- <div class="led-indicator led-red"></div> -->
+                        <!-- <div class="led-indicator led-green"></div> -->
+                    </div>
+                </div>
+
+                <!-- Person walking -->
+                <div class="person">
+                    <div class="person-head"></div>
+                    <div class="person-body"></div>
+                    <div class="person-legs">
+                        <div class="leg"></div>
+                        <div class="leg"></div>
+                    </div>
+                </div>
+
+                <!-- Lion GIF on right -->
+                <div style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%);">
+                    <img src="/app_src/assets/images/lion.gif" alt="Lion Animation" style="width: 120px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));">
+                </div>
+            </div>
+
+            <!-- Explanation Section Below -->
+            <div class="explanation">
+                <h3>How Motion Detection Works</h3>
+                <div class="flow-steps">
+                    <!-- <div class="step">
+                        <div class="step-number">1️⃣</div>
+                        <div class="step-text">Person Detected</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2️⃣</div>
+                        <div class="step-text">Signal to Arduino</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3️⃣</div>
+                        <div class="step-text">Action Triggered</div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <button >Next</button>
+    </footer>
+    <script src="./backend/experimentControls.js"></script>
+</body>
+
+</html>

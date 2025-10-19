@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motion Detection System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Comic Sans MS', sans-serif;
+      background-color: #e0f7fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    /* Header */
+    header {
+      background-color: #00796b;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 20px;
+      position: relative;
+      height: 60px;
+    }
+
+    header h1 {
+      text-align: center;
+      font-size: 22px;
+      flex: 1;
+      z-index: 1;
+    }
+
+    /* Top-left icons */
+    .nav-buttons {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .nav-buttons img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      border-radius: 4px;
+    }
+
+    .nav-buttons img:hover {
+      transform: scale(1.1);
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Main Section */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #e0f7fa 0%, #b2dfdb 100%);
+    }
+
+    .scene {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* Animation Scene */
+    .animation-scene {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 3px solid #00796b;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .sensor-animated {
+      position: absolute;
+      left: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .sensor-body {
+      width: 80px;
+      height: 120px;
+      background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+      border-radius: 12px;
+      border: 2px solid #00474a;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Arduino board */
+    .arduino-middle {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .arduino-board {
+      width: 150px;
+      height: 200px;
+      background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+      border-radius: 10px;
+      border: 2px solid #0d47a1;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Explanation Section */
+    .explanation {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      border: 2px solid #00796b;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .explanation h3 {
+      color: #00796b;
+      margin-bottom: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    /* Controller Section */
+    .controller {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 25px;
+      border: 2px solid #00796b;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      margin: 0 auto;
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    .controller h2 {
+      color: #00796b;
+      margin-bottom: 20px;
+    }
+
+    .controller label {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #004d40;
+    }
+
+    .controller input {
+      margin-left: 10px;
+      padding: 8px 10px;
+      border: 2px solid #26a69a;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 120px;
+      text-align: center;
+    }
+
+    .controller .buttons {
+      margin-top: 20px;
+    }
+
+    .controller button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      margin: 5px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .set-btn { background-color: #00796b; }
+    .reset-btn { background-color: #ff9800; }
+
+    .controller button:hover {
+      transform: scale(1.05);
+    }
+
+    #message {
+      margin-top: 10px;
+      color: #004d40;
+      font-weight: bold;
+    }
+
+    footer {
+      background-color: #00796b;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+    }
+
+    footer button {
+      background-color: #004d40;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    footer button:hover {
+      background-color: #26a69a;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🏃 Motion Detection System</h1>
+    <div class="nav-buttons">
+      <a href="/app_src/pages/page4.html"><img src="/app_src/assets/icons/home.png" alt="Home"></a>
+      <a href="/app_src/pages/achievements.html"><img src="/app_src/assets/icons/achievements.png" alt="Achievements"></a>
+      <a href="/app_src/pages/logout.html"><img src="/app_src/assets/icons/logout.png" alt="Logout"></a>
+    </div>
+  </header>
+
+  <main>
+    <div class="scene">
+      <div class="animation-scene">
+        <div class="sensor-animated">
+          <div class="sensor-body">
+            <img src="/app_src/assets/images/sc-sr04sensor.jpg" alt="Sensor" style="width: 70px; height: auto;">
+          </div>
+        </div>
+
+        <div class="arduino-middle">
+          <div class="arduino-board">
+            <img src="/app_src/assets/images/board.png" alt="Arduino" style="width: 120px; height: auto;">
+          </div>
+        </div>
+
+        <div style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%);">
+          <img src="/app_src/assets/images/lion.gif" alt="Lion Animation" style="width: 120px; height: auto;">
+        </div>
+      </div>
+
+      <div class="explanation">
+        <h3>How Motion Detection Works</h3>
+        <p style="text-align:center; color:#004d40; font-weight:bold;">
+          When motion is detected 👀, the sensor sends a signal to Arduino.  
+          The Arduino then activates the alert system 🚨!
+        </p>
+      </div>
+
+      <div class="controller">
+        <h2>🎛️ Adjust Motion Sensitivity</h2>
+        <label for="motion-threshold">Set Threshold Value:</label>
+        <input type="number" id="motion-threshold" min="0" max="1023" value="500">
+        <div class="buttons">
+          <button class="set-btn" onclick="setThreshold()">✅ Set</button>
+          <button class="reset-btn" onclick="resetThreshold()">♻️ Reset</button>
+        </div>
+        <p id="message"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <button onclick="goNext()">Next</button>
+  </footer>
+
+  <script>
+    let defaultThreshold = 500;
+
+    function setThreshold() {
+      const threshold = document.getElementById('motion-threshold').value;
+      document.getElementById('message').innerText = `✅ Motion threshold set to ${threshold}`;
+      if (window.serialAPI) {
+        window.serialAPI.send(JSON.stringify({ type: "setMotionThreshold", threshold }));
+      }
+    }
+
+    function resetThreshold() {
+      document.getElementById('motion-threshold').value = defaultThreshold;
+      document.getElementById('message').innerText = "♻️ Reset to default (500)";
+      if (window.serialAPI) {
+        window.serialAPI.send(JSON.stringify({ type: "resetMotionThreshold" }));
+      }
+    }
+
+    function goNext() {
+      window.location.href = "class6list.html";
+    }
+  </script>
+  <script src="./backend/experimentControls.js"></script>
+</body>
+</html>
